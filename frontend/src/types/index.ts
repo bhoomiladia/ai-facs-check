@@ -1,19 +1,24 @@
 export interface VerificationRequest {
   text?: string
   url?: string
+  imageUrl?: string
 }
 
 export interface Claim {
   id: string
   text: string
   category?: string
+  start_pos?: number
+  end_pos?: number
 }
 
 export interface Evidence {
   title: string
   content: string
   url: string
-  query: string
+  source: string
+  publishedDate?: string
+  relevanceScore?: number
 }
 
 export type VerificationStatus = 'True' | 'False' | 'Partially True'
@@ -25,6 +30,7 @@ export interface VerifiedClaim {
   reasoning: string
   evidence: Evidence[]
   search_queries: string[]
+  sources_used: string[]
 }
 
 export type ProcessingStage = 'Extracting' | 'Searching' | 'Verifying' | 'Completed'
@@ -35,6 +41,13 @@ export interface ProcessingUpdate {
   progress: number
   claims_processed?: number
   total_claims?: number
+}
+
+export interface ImageAnalysisResult {
+  description: string
+  extractedText?: string
+  objects?: string[]
+  context?: string
 }
 
 export interface VerificationResult {
@@ -49,6 +62,8 @@ export interface VerificationResult {
     true_claims: number
     false_claims: number
     partially_true_claims: number
+    sources_consulted: string[]
+    image_analysis?: ImageAnalysisResult
   }
 }
 

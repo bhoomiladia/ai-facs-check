@@ -1,20 +1,19 @@
-import { Shield, Zap } from 'lucide-react'
+import { Shield } from 'lucide-react'
 
 export function Header() {
   return (
-    <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm">
-      <div className="container mx-auto px-4 py-6">
+    <header className="border-b border-slate-800/50 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-50">
+      <div className="container mx-auto px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <Shield className="h-8 w-8 text-blue-400" />
-            <Zap className="h-6 w-6 text-yellow-400" />
+          <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/10">
+            <Shield className="h-6 w-6 text-blue-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">
-              Fact Verification System
+            <h1 className="text-xl font-bold gradient-text">
+              FactCheck AI
             </h1>
-            <p className="text-slate-400 text-sm">
-              AI-powered claim extraction and real-time verification
+            <p className="text-slate-500 text-xs tracking-wide">
+              AI-Powered Claim Verification
             </p>
           </div>
         </div>

@@ -1,6 +1,8 @@
 'use client'
 
+import { useState } from 'react'
 import { VerifiedClaim } from '@/types'
+import { CheckCircle, XCircle, AlertTriangle } from 'lucide-react'
 
 interface HighlightedTextProps {
   text: string
@@ -9,7 +11,8 @@ interface HighlightedTextProps {
 }
 
 export function HighlightedText({ text, verifiedClaims, onClaimClick }: HighlightedTextProps) {
-  // Create segments with highlighting
+  const [hoveredClaim, setHoveredClaim] = useState<string | null>(null)
+
   const createHighlightedSegments = () => {
     const segments: Array<{
       text: string
@@ -19,8 +22,8 @@ export function HighlightedText({ text, verifiedClaims, onClaimClick }: Highligh
 
     let currentIndex = 0
     const sortedClaims = [...verifiedClaims].sort((a, b) => {
-      const aStart = a.claim.start_pos || text.indexOf(a.claim.text)
-      const bStart = b.claim.start_pos || text.indexOf(b.claim.text)
+      const aStart = a.claim.start_pos ?? text.indexOf(a.claim.text)
+      const bStart = b.claim.start_pos ?? text.indexOf(b.claim.text)
       return aStart - bStart
     })
 
@@ -30,31 +33,16 @@ export function HighlightedText({ text, verifiedClaims, onClaimClick }: Highligh
       const endPos = verifiedClaim.claim.end_pos ?? (startPos + claimText.length)
 
       if (startPos >= currentIndex && startPos !== -1) {
-        // Add non-highlighted text before the claim
         if (startPos > currentIndex) {
-          segments.push({
-            text: text.slice(currentIndex, startPos),
-            isHighlighted: false
-          })
+          segments.push({ text: text.slice(currentIndex, startPos), isHighlighted: false })
         }
-
-        // Add highlighted claim
-        segments.push({
-          text: text.slice(startPos, endPos),
-          claim: verifiedClaim,
-          isHighlighted: true
-        })
-
+        segments.push({ text: text.slice(startPos, endPos), claim: verifiedClaim, isHighlighted: true })
         currentIndex = endPos
       }
     }
 
-    // Add remaining text
     if (currentIndex < text.length) {
-      segments.push({
-        text: text.slice(currentIndex),
-        isHighlighted: false
-      })
+      segments.push({ text: text.slice(currentIndex), isHighlighted: false })
     }
 
     return segments
@@ -62,14 +50,19 @@ export function HighlightedText({ text, verifiedClaims, onClaimClick }: Highligh
 
   const getHighlightClass = (status: string) => {
     switch (status) {
-      case 'True':
-        return 'bg-green-500/20 border-l-4 border-green-500 hover:bg-green-500/30 cursor-pointer px-1 py-0.5 rounded-r transition-all duration-200'
-      case 'False':
-        return 'bg-red-500/20 border-l-4 border-red-500 hover:bg-red-500/30 cursor-pointer px-1 py-0.5 rounded-r transition-all duration-200'
-      case 'Partially True':
-        return 'bg-yellow-500/20 border-l-4 border-yellow-500 hover:bg-yellow-500/30 cursor-pointer px-1 py-0.5 rounded-r transition-all duration-200'
-      default:
-        return 'bg-gray-500/20 border-l-4 border-gray-500 hover:bg-gray-500/30 cursor-pointer px-1 py-0.5 rounded-r transition-all duration-200'
+      case 'True': return 'claim-highlight claim-true'
+      case 'False': return 'claim-highlight claim-false'
+      case 'Partially True': return 'claim-highlight claim-partial'
+      default: return 'claim-highlight'
+    }
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'True': return <CheckCircle className="h-3 w-3 text-green-400" />
+      case 'False': return <XCircle className="h-3 w-3 text-red-400" />
+      case 'Partially True': return <AlertTriangle className="h-3 w-3 text-yellow-400" />
+      default: return null
     }
   }
 
@@ -77,16 +70,28 @@ export function HighlightedText({ text, verifiedClaims, onClaimClick }: Highligh
 
   return (
     <div className="prose prose-invert max-w-none">
-      <div className="text-slate-300 leading-relaxed">
+      <div className="text-slate-300 leading-relaxed text-sm">
         {segments.map((segment, index) => (
           <span key={index}>
             {segment.isHighlighted && segment.claim ? (
-              <span
-                className={getHighlightClass(segment.claim.status)}
-                onClick={() => onClaimClick?.(segment.claim!)}
-                title={`${segment.claim.status} (${Math.round(segment.claim.confidence * 100)}% confidence)`}
-              >
-                {segment.text}
+              <span className="relative inline">
+                <span
+                  className={getHighlightClass(segment.claim.status)}
+                  onClick={() => onClaimClick?.(segment.claim!)}
+                  onMouseEnter={() => setHoveredClaim(segment.claim!.claim.id)}
+                  onMouseLeave={() => setHoveredClaim(null)}
+                >
+                  {segment.text}
+                </span>
+                {/* Tooltip */}
+                {hoveredClaim === segment.claim.claim.id && (
+                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 whitespace-nowrap text-xs flex items-center gap-1.5 pointer-events-none animate-fade-in-up">
+                    {getStatusIcon(segment.claim.status)}
+                    <span className="text-white font-medium">{segment.claim.status}</span>
+                    <span className="text-slate-500">•</span>
+                    <span className="text-slate-400">{Math.round(segment.claim.confidence * 100)}%</span>
+                  </span>
+                )}
               </span>
             ) : (
               segment.text
@@ -94,27 +99,22 @@ export function HighlightedText({ text, verifiedClaims, onClaimClick }: Highligh
           </span>
         ))}
       </div>
-      
+
       {/* Legend */}
-      <div className="mt-6 p-4 bg-slate-800 rounded-lg">
-        <h4 className="text-sm font-medium text-slate-300 mb-3">Color Legend</h4>
-        <div className="flex flex-wrap gap-4 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500/20 border-l-4 border-green-500 rounded-r"></div>
-            <span className="text-slate-400">True</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500/20 border-l-4 border-red-500 rounded-r"></div>
-            <span className="text-slate-400">False</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-500/20 border-l-4 border-yellow-500 rounded-r"></div>
-            <span className="text-slate-400">Partially True</span>
-          </div>
+      <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-500">
+        <div className="flex items-center gap-1.5">
+          <span className="w-5 h-0.5 bg-green-500 rounded" />
+          <span>True</span>
         </div>
-        <p className="text-xs text-slate-500 mt-2">
-          Click on highlighted text to view detailed verification results
-        </p>
+        <div className="flex items-center gap-1.5">
+          <span className="w-5 h-0.5 bg-red-500 rounded" />
+          <span>False</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-5 h-0.5 bg-yellow-500 rounded" />
+          <span>Partial</span>
+        </div>
+        <span className="text-slate-600">• Hover for details</span>
       </div>
     </div>
   )

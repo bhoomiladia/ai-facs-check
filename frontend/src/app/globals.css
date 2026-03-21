@@ -40,50 +40,108 @@
 ::-webkit-scrollbar {
   width: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  @apply bg-muted;
+  @apply bg-transparent;
 }
-
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/30 rounded-full;
+  @apply bg-muted-foreground/20 rounded-full;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/50;
+  @apply bg-muted-foreground/40;
 }
 
-/* Claim highlight animations */
+/* ─── Gradient & Glow Utilities ─── */
+.gradient-text {
+  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glow-blue {
+  box-shadow: 0 0 20px rgba(96, 165, 250, 0.15), 0 0 60px rgba(96, 165, 250, 0.05);
+}
+.glow-green {
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.15), 0 0 60px rgba(74, 222, 128, 0.05);
+}
+.glow-red {
+  box-shadow: 0 0 20px rgba(248, 113, 113, 0.15), 0 0 60px rgba(248, 113, 113, 0.05);
+}
+.glow-yellow {
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.15), 0 0 60px rgba(250, 204, 21, 0.05);
+}
+
+/* ─── Verdict Gauge ─── */
+.gauge-ring {
+  --gauge-value: 0;
+  stroke-dasharray: 283;
+  stroke-dashoffset: calc(283 - (283 * var(--gauge-value) / 100));
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Claim Highlights ─── */
 .claim-highlight {
-  @apply bg-primary/20 border-l-4 border-primary px-2 py-1 rounded-r transition-all duration-200;
+  @apply px-1 py-0.5 rounded transition-all duration-200 cursor-pointer;
 }
-
-.claim-highlight:hover {
-  @apply bg-primary/30 cursor-pointer;
-}
-
 .claim-true {
-  @apply border-green-500 bg-green-500/10;
+  @apply bg-green-500/15 border-b-2 border-green-500 hover:bg-green-500/25;
 }
-
 .claim-false {
-  @apply border-red-500 bg-red-500/10;
+  @apply bg-red-500/15 border-b-2 border-red-500 hover:bg-red-500/25;
 }
-
 .claim-partial {
-  @apply border-yellow-500 bg-yellow-500/10;
+  @apply bg-yellow-500/15 border-b-2 border-yellow-500 hover:bg-yellow-500/25;
 }
 
-/* Processing animation */
-.processing-pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* ─── Smooth expand/collapse ─── */
+.expand-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.expand-collapse.open {
+  grid-template-rows: 1fr;
+}
+.expand-collapse > div {
+  overflow: hidden;
 }
 
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: .5;
-  }
+/* ─── Confidence Bar ─── */
+.confidence-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.08);
+  overflow: hidden;
+}
+.confidence-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── Animations ─── */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease forwards;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 25%, rgba(255,255,255,0.05) 50%, transparent 75%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
 }

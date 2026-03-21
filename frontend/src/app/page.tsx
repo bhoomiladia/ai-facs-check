@@ -12,7 +12,7 @@ export default function Home() {
   const [processingUpdates, setProcessingUpdates] = useState<ProcessingUpdate[]>([])
   const [verificationResult, setVerificationResult] = useState<VerificationResult | null>(null)
 
-  const handleStartVerification = async (text: string, url?: string) => {
+  const handleStartVerification = async (text: string, url?: string, imageUrl?: string) => {
     setCurrentView('processing')
     setProcessingUpdates([])
     
@@ -29,7 +29,7 @@ export default function Home() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text, url }),
+        body: JSON.stringify({ text, url, imageUrl }),
       })
 
       if (!response.ok) {
