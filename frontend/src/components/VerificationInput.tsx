@@ -5,15 +5,15 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { FileText, Link, Zap, Shield, Image, Sparkles } from 'lucide-react'
+import { FileText, Link, Image, Search, Cpu, ShieldCheck, ArrowRight } from 'lucide-react'
 
 interface VerificationInputProps {
   onStartVerification: (text: string, url?: string, imageUrl?: string) => void
 }
 
-const exampleClaims = [
+const examples = [
   "The Great Wall of China is visible from space with the naked eye.",
   "Humans only use 10% of their brains.",
   "Lightning never strikes the same place twice.",
@@ -25,29 +25,17 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
   const [url, setUrl] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [activeTab, setActiveTab] = useState('text')
-  const [placeholderIdx, setPlaceholderIdx] = useState(0)
+  const [exIdx, setExIdx] = useState(0)
 
-  // Cycle placeholder examples
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIdx((prev) => (prev + 1) % exampleClaims.length)
-    }, 4000)
-    return () => clearInterval(interval)
+    const t = setInterval(() => setExIdx(i => (i + 1) % examples.length), 4000)
+    return () => clearInterval(t)
   }, [])
 
   const handleSubmit = () => {
-    if (activeTab === 'text' && text.trim()) {
-      onStartVerification(text.trim())
-    } else if (activeTab === 'url' && url.trim()) {
-      onStartVerification('', url.trim())
-    } else if (activeTab === 'image' && imageUrl.trim()) {
-      onStartVerification('', undefined, imageUrl.trim())
-    }
-  }
-
-  const fillExample = () => {
-    setText(exampleClaims[placeholderIdx])
-    setActiveTab('text')
+    if (activeTab === 'text' && text.trim()) onStartVerification(text.trim())
+    else if (activeTab === 'url' && url.trim()) onStartVerification('', url.trim())
+    else if (activeTab === 'image' && imageUrl.trim()) onStartVerification('', undefined, imageUrl.trim())
   }
 
   const isValid = (activeTab === 'text' && text.trim()) ||
@@ -55,130 +43,127 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
                   (activeTab === 'image' && imageUrl.trim())
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      {/* Hero */}
-      <div className="text-center space-y-4 pt-4">
-        <h2 className="text-4xl font-bold gradient-text">
-          Verify Any Claim
-        </h2>
-        <p className="text-lg text-slate-400 max-w-xl mx-auto leading-relaxed">
-          Paste text, a URL, or an image — our AI extracts claims and cross-references them against trusted sources in seconds.
-        </p>
-      </div>
+    <div className="max-w-4xl mx-auto animate-slide-up">
+      {/* Compact two-column top */}
+      <div className="grid md:grid-cols-[1fr_340px] gap-4 mb-4">
+        {/* Left: Title + Input */}
+        <div className="space-y-3">
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Verify Any Claim</h2>
+            <p className="text-sm text-slate-500 mt-1">Paste text, a URL, or an image link to start analysis</p>
+          </div>
+          
+          <div className="panel p-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+              <TabsList className="grid w-full grid-cols-3 bg-slate-800/60 mb-3 h-9">
+                <TabsTrigger value="text" className="flex items-center gap-1.5 text-xs h-7">
+                  <FileText className="h-3 w-3" /> Text
+                </TabsTrigger>
+                <TabsTrigger value="url" className="flex items-center gap-1.5 text-xs h-7">
+                  <Link className="h-3 w-3" /> URL
+                </TabsTrigger>
+                <TabsTrigger value="image" className="flex items-center gap-1.5 text-xs h-7">
+                  <Image className="h-3 w-3" /> Image
+                </TabsTrigger>
+              </TabsList>
 
-      {/* Input Card */}
-      <Card className="bg-slate-900/60 border-slate-700/50 glow-blue">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-white text-base">
-            <Zap className="h-4 w-4 text-yellow-400" />
-            Input Source
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-slate-800/80 mb-4">
-              <TabsTrigger value="text" className="flex items-center gap-2 text-xs">
-                <FileText className="h-3.5 w-3.5" />
-                Text
-              </TabsTrigger>
-              <TabsTrigger value="url" className="flex items-center gap-2 text-xs">
-                <Link className="h-3.5 w-3.5" />
-                URL
-              </TabsTrigger>
-              <TabsTrigger value="image" className="flex items-center gap-2 text-xs">
-                <Image className="h-3.5 w-3.5" />
-                Image
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="text" className="space-y-3">
-              <div className="space-y-2">
+              <TabsContent value="text" className="mt-0">
                 <Textarea
                   id="text-input"
-                  placeholder={`Try: "${exampleClaims[placeholderIdx]}"`}
+                  placeholder={`e.g. "${examples[exIdx]}"`}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
-                  className="min-h-[160px] bg-slate-800/60 border-slate-700 text-white placeholder:text-slate-600 resize-none focus:border-blue-500/50 focus:ring-blue-500/20"
+                  className="min-h-[120px] bg-slate-900/60 border-slate-700/40 text-white text-sm placeholder:text-slate-600 resize-none rounded-lg"
                 />
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-slate-600">
-                    {text.length} characters
-                  </p>
-                  <button onClick={fillExample} className="flex items-center gap-1 text-xs text-blue-400 hover:text-blue-300 transition-colors">
-                    <Sparkles className="h-3 w-3" />
-                    Try an example
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-[11px] text-slate-600">{text.length} chars</span>
+                  <button
+                    onClick={() => { setText(examples[exIdx]); setActiveTab('text') }}
+                    className="text-[11px] text-indigo-400 hover:text-indigo-300 transition-colors"
+                  >
+                    Use this example
                   </button>
                 </div>
-              </div>
-            </TabsContent>
+              </TabsContent>
 
-            <TabsContent value="url" className="space-y-3">
-              <div className="space-y-2">
-                <Label htmlFor="url-input" className="text-slate-400 text-sm">
-                  Article or webpage URL
-                </Label>
+              <TabsContent value="url" className="mt-0 space-y-2">
+                <Label htmlFor="url-input" className="text-slate-500 text-xs">Article or webpage URL</Label>
                 <Input
                   id="url-input"
                   type="url"
                   placeholder="https://example.com/article"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
-                  className="bg-slate-800/60 border-slate-700 text-white placeholder:text-slate-600 focus:border-blue-500/50"
+                  className="bg-slate-900/60 border-slate-700/40 text-white text-sm placeholder:text-slate-600 rounded-lg"
                 />
-              </div>
-            </TabsContent>
+              </TabsContent>
 
-            <TabsContent value="image" className="space-y-3">
-              <div className="space-y-2">
-                <Label htmlFor="image-input" className="text-slate-400 text-sm">
-                  Image URL to analyze
-                </Label>
+              <TabsContent value="image" className="mt-0 space-y-2">
+                <Label htmlFor="image-input" className="text-slate-500 text-xs">Image URL to analyze</Label>
                 <Input
                   id="image-input"
                   type="url"
                   placeholder="https://example.com/image.jpg"
                   value={imageUrl}
                   onChange={(e) => setImageUrl(e.target.value)}
-                  className="bg-slate-800/60 border-slate-700 text-white placeholder:text-slate-600 focus:border-blue-500/50"
+                  className="bg-slate-900/60 border-slate-700/40 text-white text-sm placeholder:text-slate-600 rounded-lg"
                 />
-              </div>
-            </TabsContent>
-          </Tabs>
+              </TabsContent>
+            </Tabs>
 
-          <div className="mt-5 flex justify-center">
             <Button
               onClick={handleSubmit}
               disabled={!isValid}
-              size="lg"
-              className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white px-10 py-3 text-base font-semibold rounded-xl shadow-lg shadow-blue-500/20 disabled:opacity-40 disabled:shadow-none transition-all"
+              className="w-full mt-3 btn-verify h-10 text-sm"
             >
-              <Shield className="h-5 w-5 mr-2" />
               Verify Now
+              <ArrowRight className="h-4 w-4 ml-1.5" />
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
 
-      {/* Features */}
-      <div className="grid md:grid-cols-3 gap-4">
-        {[
-          { icon: FileText, color: 'text-green-400', bg: 'bg-green-500/10', title: 'Smart Extraction', desc: 'AI identifies atomic, verifiable claims from any content' },
-          { icon: Zap, color: 'text-blue-400', bg: 'bg-blue-500/10', title: 'Multi-Source Search', desc: 'Cross-references claims against news, academic, and web sources' },
-          { icon: Shield, color: 'text-purple-400', bg: 'bg-purple-500/10', title: 'Confidence Scoring', desc: 'Each claim gets a score with transparent reasoning' },
-        ].map((f) => (
-          <Card key={f.title} className="bg-slate-900/40 border-slate-800/50">
-            <CardContent className="pt-5 pb-4">
-              <div className="flex items-center gap-2.5 mb-2">
-                <div className={`p-1.5 rounded-lg ${f.bg}`}>
-                  <f.icon className={`h-4 w-4 ${f.color}`} />
-                </div>
-                <h3 className="font-medium text-white text-sm">{f.title}</h3>
-              </div>
-              <p className="text-slate-500 text-xs leading-relaxed">{f.desc}</p>
-            </CardContent>
-          </Card>
-        ))}
+        {/* Right: Feature cards */}
+        <div className="space-y-3 stagger">
+          <FeatureCard
+            icon={<Search className="h-4 w-4 text-indigo-400" />}
+            title="Multi-Source Search"
+            desc="Queries 4+ search engines, news APIs, and fact-check databases simultaneously"
+            stat="4+ sources"
+          />
+          <FeatureCard
+            icon={<Cpu className="h-4 w-4 text-cyan-400" />}
+            title="AI Claim Analysis"
+            desc="Hardened verification with anti-hallucination, semantic disambiguation, and adversarial defense"
+            stat="7 checks"
+          />
+          <FeatureCard
+            icon={<ShieldCheck className="h-4 w-4 text-emerald-400" />}
+            title="Confidence Scoring"
+            desc="Calibrated confidence with source hierarchy, cross-contamination prevention"
+            stat="0-100%"
+          />
+        </div>
       </div>
+    </div>
+  )
+}
+
+function FeatureCard({ icon, title, desc, stat }: {
+  icon: React.ReactNode
+  title: string
+  desc: string
+  stat: string
+}) {
+  return (
+    <div className="panel-accent p-3.5 hover-lift cursor-default">
+      <div className="flex items-start justify-between mb-1.5">
+        <div className="flex items-center gap-2">
+          {icon}
+          <span className="text-sm font-medium text-white">{title}</span>
+        </div>
+        <span className="text-[10px] text-indigo-400 font-mono bg-indigo-500/10 px-2 py-0.5 rounded">{stat}</span>
+      </div>
+      <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
     </div>
   )
 }

@@ -17,7 +17,6 @@ export default function Home() {
     setProcessingUpdates([])
     
     try {
-      // Add initial processing update
       setProcessingUpdates([{
         stage: 'Extracting',
         message: 'Starting verification process...',
@@ -26,9 +25,7 @@ export default function Home() {
 
       const response = await fetch('/api/verify', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text, url, imageUrl }),
       })
 
@@ -37,27 +34,18 @@ export default function Home() {
         throw new Error(errorData.error || 'Failed to verify claims')
       }
 
-      // Simulate progress updates
       setProcessingUpdates(prev => [...prev, {
-        stage: 'Extracting',
-        message: 'Extracting verifiable claims...',
-        progress: 0.3
+        stage: 'Extracting', message: 'Extracting verifiable claims...', progress: 0.3
       }])
-
       await new Promise(resolve => setTimeout(resolve, 1000))
 
       setProcessingUpdates(prev => [...prev, {
-        stage: 'Searching',
-        message: 'Gathering evidence from web sources...',
-        progress: 0.6
+        stage: 'Searching', message: 'Gathering evidence from web sources...', progress: 0.6
       }])
-
       await new Promise(resolve => setTimeout(resolve, 1000))
 
       setProcessingUpdates(prev => [...prev, {
-        stage: 'Verifying',
-        message: 'Analyzing claims against evidence...',
-        progress: 0.8
+        stage: 'Verifying', message: 'Analyzing claims against evidence...', progress: 0.8
       }])
 
       const result = await response.json()
@@ -70,10 +58,7 @@ export default function Home() {
       }])
 
       setVerificationResult(result)
-      
-      setTimeout(() => {
-        setCurrentView('results')
-      }, 1000)
+      setTimeout(() => setCurrentView('results'), 1000)
 
     } catch (error) {
       console.error('Verification error:', error)
@@ -92,28 +77,47 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      <Header />
-      
-      <main className="container mx-auto px-4 py-8">
-        {currentView === 'input' && (
-          <VerificationInput onStartVerification={handleStartVerification} />
-        )}
-        
-        {currentView === 'processing' && (
-          <ProcessingView 
-            updates={processingUpdates}
-            onCancel={handleBackToInput}
-          />
-        )}
-        
-        {currentView === 'results' && verificationResult && (
-          <ResultsDashboard 
-            result={verificationResult}
-            onStartNew={handleBackToInput}
-          />
-        )}
-      </main>
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Graphical Background */}
+      <div className="scene-bg">
+        <div className="dot-grid" />
+        <div className="scan-line" />
+        <div className="geo-shape geo-1" />
+        <div className="geo-shape geo-2" />
+        <div className="geo-shape geo-3" />
+        <div className="geo-shape geo-4" />
+        {/* Connection SVG */}
+        <div className="connection-lines">
+          <svg>
+            <line className="conn-line" x1="10%" y1="20%" x2="45%" y2="55%" />
+            <line className="conn-line" x1="90%" y1="15%" x2="55%" y2="50%" />
+            <line className="conn-line" x1="20%" y1="80%" x2="60%" y2="45%" />
+            <line className="conn-line" x1="80%" y1="75%" x2="50%" y2="40%" />
+          </svg>
+        </div>
+        {/* Pulse dots */}
+        <div className="pulse-dot" />
+        <div className="pulse-dot" />
+        <div className="pulse-dot" />
+        <div className="pulse-dot" />
+        <div className="pulse-dot" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10">
+        <Header />
+        <main className="container mx-auto px-4 py-6">
+          {currentView === 'input' && (
+            <VerificationInput onStartVerification={handleStartVerification} />
+          )}
+          {currentView === 'processing' && (
+            <ProcessingView updates={processingUpdates} onCancel={handleBackToInput} />
+          )}
+          {currentView === 'results' && verificationResult && (
+            <ResultsDashboard result={verificationResult} onStartNew={handleBackToInput} />
+          )}
+        </main>
+      </div>
     </div>
   )
 }

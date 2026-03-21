@@ -57,9 +57,9 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 animate-fade-in-up">
+    <div className="max-w-5xl mx-auto space-y-5 animate-slide-up">
       {/* ─── Verdict Banner ─── */}
-      <div className={`relative overflow-hidden rounded-2xl border ${verdict.border} bg-gradient-to-br ${verdict.bg} p-6`}>
+      <div className={`relative overflow-hidden rounded-xl border ${verdict.border} ${verdict.bg} p-5 panel`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-5">
             {/* Gauge */}

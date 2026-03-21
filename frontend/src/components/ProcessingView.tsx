@@ -38,7 +38,7 @@ export function ProcessingView({ updates, onCancel }: ProcessingViewProps) {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-fade-in-up">
+    <div className="max-w-2xl mx-auto space-y-5 animate-slide-up">
       {/* Header */}
       <div className="text-center space-y-2">
         <h2 className="text-2xl font-bold text-white">
@@ -53,7 +53,7 @@ export function ProcessingView({ updates, onCancel }: ProcessingViewProps) {
       </div>
 
       {/* Stepper Card */}
-      <Card className="bg-slate-900/50 border-slate-700/50">
+      <Card className="panel">
         <CardContent className="pt-6 pb-5">
           {/* Progress bar */}
           {latestUpdate && (
