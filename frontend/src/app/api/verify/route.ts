@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { AdvancedFactCheckerAgent } from '@/lib/fact-checker-agent'
+import axios from 'axios'
+import https from 'https'
+import crypto from 'crypto'
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,20 +19,33 @@ export async function POST(request: NextRequest) {
     let content = text
     if (url && !text) {
       try {
-        const response = await fetch(url)
-        if (!response.ok) {
-          throw new Error('Failed to fetch URL content')
-        }
-        const html = await response.text()
+        const response = await axios.get(url, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+          },
+          httpsAgent: new https.Agent({
+            // This is the CRITICAL fix for ERR_SSL_UNSAFE_LEGACY_RENEGOTIATION_DISABLED
+            secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
+          }),
+          timeout: 15000,
+        })
+
+        const html = response.data
         // Basic text extraction
         content = html
           .replace(/<[^>]+>/g, ' ')
           .replace(/\s+/g, ' ')
           .trim()
-          .slice(0, 3000) // Increased limit for more content
+          .slice(0, 3000)
       } catch (error) {
+        console.error('URL fetch error:', error)
         return NextResponse.json(
-          { error: 'Failed to fetch URL content' },
+          { 
+            error: error instanceof Error ? error.message : 'Failed to fetch URL content',
+            detail: 'This usually happens due to target server SSL configuration or IP blocking.'
+          },
           { status: 400 }
         )
       }
@@ -58,8 +74,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Verification error:', error)
     return NextResponse.json(
-      { 
-        error: 'Verification failed', 
+      {
+        error: 'Verification failed',
         detail: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }

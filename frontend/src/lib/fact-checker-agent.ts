@@ -1,5 +1,32 @@
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 import { llmProvider } from './llm-provider'
+
+const INTENT_CLASSIFICATION_PROMPT = `### SYSTEM ROLE
+You are a Linguistic Intent Analyzer. Distinguish between a search for information and a test of a specific fact.
+
+### CATEGORIES
+1. <INTERROGATIVE>: A pure question (e.g., "Who is...?", "What is...?"). 
+   - NOTE: If the question contains a FALSE premise (e.g., "Why is Elon Musk the CEO of Starbucks?"), identify the corrected premise (e.g., "Brian Niccol is the CEO of Starbucks, not Elon Musk").
+2. <DIRECT_CLAIM>: An assertion or "test" question containing a specific fact to verify (e.g., "Is Elon Musk the CEO of Starbucks?").
+
+### OUTPUT RULES
+- If <INTERROGATIVE>: Return "INTERROGATIVE | [A rephrased version of the core question for searching]"
+- If <DIRECT_CLAIM>: Return "CLAIM | [The core statement to be verified]"
+`;
+
+const CORRECTION_PROTOCOL_PROMPT = `### THE CORRECTION PROTOCOL (CRITICAL)
+You are an Information Auditor. If a claim is False, Partially True, or an Interrogative question is asked:
+1. **Locate Ground Truth:** Find the accurate name, date, or event in the provided evidence.
+2. **Mandatory Field:** You MUST populate the "correct_answer" field with this verified information.
+3. **No Mismatch:** If the user asks about "XYZ" and evidence shows "ABC", the status is FALSE and "correct_answer" is "ABC".
+
+### UPDATED OUTPUT JSON STRUCTURE
+{
+  "status": "True | False | Partially True",
+  "confidence": 0.0-1.0,
+  "reasoning": "Explanation of the verification process.",
+  "correct_answer": "The verified absolute fact (e.g., 'Brian Niccol is the CEO, not XYZ')"
+}`;
 import {
   NewsAPIToolkit,
   ComposioWebSearch,
@@ -32,6 +59,7 @@ export interface VerifiedClaim {
   status: 'True' | 'False' | 'Partially True'
   confidence: number
   reasoning: string
+  correct_answer?: string
   evidence: Evidence[]
   search_queries: string[]
   sources_used: string[]
@@ -333,6 +361,7 @@ Return ONLY a JSON array of strings:
     status: 'True' | 'False' | 'Partially True'
     confidence: number
     reasoning: string
+    correct_answer?: string
   }> {
     try {
       const evidenceText = evidence
@@ -393,7 +422,7 @@ Return ONLY valid JSON. Put ALL analysis inside the "reasoning" field. Nothing o
 }`
 
       const messages = [
-        new SystemMessage(systemPrompt),
+        new SystemMessage(systemPrompt + "\n\n" + CORRECTION_PROTOCOL_PROMPT),
         new HumanMessage(`Claim: "${sanitizeInputText(claim)}"\n\nEvidence:\n${sanitizeInputText(evidenceText)}`)
       ]
 
@@ -404,7 +433,8 @@ Return ONLY valid JSON. Put ALL analysis inside the "reasoning" field. Nothing o
       return {
         status: result.status || 'Partially True',
         confidence: Math.max(0, Math.min(1, parseFloat(result.confidence) || 0.3)),
-        reasoning: result.reasoning || 'Unable to verify claim with available evidence'
+        reasoning: result.reasoning || 'Unable to verify claim with available evidence',
+        correct_answer: result.correct_answer
       }
     } catch (error) {
       console.error('Error verifying claim:', error)
@@ -456,8 +486,40 @@ Return ONLY valid JSON. Put ALL analysis inside the "reasoning" field. Nothing o
     // Sanitize input against prompt injection
     processedText = sanitizeInputText(processedText)
 
-    // Extract claims
-    const claims = await this.extractClaims(processedText)
+    // ─── INTENT CLASSIFICATION ───
+    const intentPrompt = INTENT_CLASSIFICATION_PROMPT + `\n\nAnalyze this: "${processedText}"`
+    let intentResult = ''
+    try {
+      const intentResponse = await this.llmProvider.invoke([
+        new HumanMessage(intentPrompt)
+      ])
+      intentResult = intentResponse.content.toString().trim()
+    } catch (error) {
+      console.error('Error during intent classification:', error)
+      intentResult = `CLAIM | ${processedText}`
+    }
+
+    const isInterrogative = intentResult.startsWith('INTERROGATIVE |')
+    const classifiedText = intentResult
+      .replace('INTERROGATIVE |', '')
+      .replace('CLAIM |', '')
+      .trim()
+
+    // ─── STAGE 2: CLAIM EXTRACTION / PREPARATION ───
+    let claims: Claim[] = []
+    
+    if (isInterrogative) {
+      // For interrogative questions, we skip extraction and treat the input as a single inquiry to verify/answer.
+      // This ensures "general questions" get search evidence ("resources").
+      claims = [{
+        id: `q_${Date.now()}`,
+        text: classifiedText,
+        category: 'informative'
+      }]
+    } else {
+      // Extract substantive claims from the provided text
+      claims = await this.extractClaims(classifiedText)
+    }
 
     if (claims.length === 0) {
       return {
@@ -494,6 +556,7 @@ Return ONLY valid JSON. Put ALL analysis inside the "reasoning" field. Nothing o
         status: verification.status,
         confidence: verification.confidence,
         reasoning: verification.reasoning,
+        correct_answer: verification.correct_answer,
         evidence: evidence.slice(0, 5),
         search_queries: searchQueries,
         sources_used: sourcesUsed
