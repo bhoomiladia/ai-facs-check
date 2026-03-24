@@ -27,6 +27,7 @@
     "composio-core": "^0.5.39",
     "exa-js": "^1.0.12",
     "groq-sdk": "^0.8.0",
+    "jspdf": "^4.2.1",
     "langchain": "^0.2.11",
     "lucide-react": "^0.460.0",
     "newsapi": "^2.4.1",

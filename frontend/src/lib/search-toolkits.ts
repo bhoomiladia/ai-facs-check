@@ -25,14 +25,14 @@ export class NewsAPIToolkit {
     this.apiKey = apiKey
   }
 
-  async searchNews(query: string, maxResults: number = 5): Promise<SearchResult[]> {
+  async searchNews(query: string, maxResults: number = 5, sortByDate: boolean = false): Promise<SearchResult[]> {
     try {
       const response = await axios.get('https://newsapi.org/v2/everything', {
         params: {
           q: query,
           apiKey: this.apiKey,
           pageSize: maxResults,
-          sortBy: 'relevancy',
+          sortBy: sortByDate ? 'publishedAt' : 'relevancy',
           language: 'en'
         }
       })
@@ -140,7 +140,7 @@ export class ImageAnalysisToolkit {
 
       const model = this.genAI.getGenerativeModel({ model: "gemini-3-flash-preview" })
 
-      const prompt = "Analyze this image and extract any factual claims, text, or information that can be fact-checked. Describe what you see in detail."
+      const prompt = "Analyze this image and provide a factual description. Follow these rules exactly: 1. Provide a single concise paragraph describing what you see. 2. Provide a second paragraph listing any factual claims, text, or information that can be fact-checked. 3. DO NOT use markdown formatting, bullet points, asterisks, or headings. Write in plain text only."
 
       const result = await model.generateContent([
         prompt,

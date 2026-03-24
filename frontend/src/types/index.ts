@@ -21,13 +21,16 @@ export interface Evidence {
   relevanceScore?: number
 }
 
-export type VerificationStatus = 'True' | 'False' | 'Partially True'
+export type VerificationStatus = 'True' | 'False' | 'Partially True' | 'Outdated' | 'Disputed' | 'Insufficient Context'
 
 export interface VerifiedClaim {
   claim: Claim
   status: VerificationStatus
   confidence: number
   reasoning: string
+  correct_answer?: string
+  temporal_note?: string
+  conflicting_sources?: string[]
   evidence: Evidence[]
   search_queries: string[]
   sources_used: string[]

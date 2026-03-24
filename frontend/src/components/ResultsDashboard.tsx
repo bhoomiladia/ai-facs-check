@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { VerificationResult, VerifiedClaim } from '@/types'
+import { exportVerificationAsPDF } from '@/lib/export-pdf'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -17,7 +18,11 @@ import {
   FileText,
   Shield,
   Clock,
-  BarChart3
+  BarChart3,
+  HelpCircle,
+  GitBranch,
+  Timer,
+  Download
 } from 'lucide-react'
 
 interface ResultsDashboardProps {
@@ -47,6 +52,9 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
       case 'True': return { icon: CheckCircle, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/20', barColor: 'bg-green-500' }
       case 'False': return { icon: XCircle, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', barColor: 'bg-red-500' }
       case 'Partially True': return { icon: AlertTriangle, color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', barColor: 'bg-yellow-500' }
+      case 'Outdated': return { icon: Timer, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20', barColor: 'bg-orange-500' }
+      case 'Disputed': return { icon: GitBranch, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20', barColor: 'bg-purple-500' }
+      case 'Insufficient Context': return { icon: HelpCircle, color: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/20', barColor: 'bg-slate-500' }
       default: return { icon: AlertTriangle, color: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/20', barColor: 'bg-slate-500' }
     }
   }
@@ -89,10 +97,20 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
               </p>
             </div>
           </div>
-          <Button onClick={onStartNew} variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white">
-            <RotateCcw className="h-4 w-4 mr-2" />
-            New Check
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => exportVerificationAsPDF(result)}
+              variant="outline"
+              className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:text-indigo-200"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export PDF
+            </Button>
+            <Button onClick={onStartNew} variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white">
+              <RotateCcw className="h-4 w-4 mr-2" />
+              New Check
+            </Button>
+          </div>
         </div>
 
         {/* Mini stats row */}
@@ -210,6 +228,43 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
                       <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">Analysis</h4>
                       <p className="text-sm text-slate-300 leading-relaxed">{vc.reasoning}</p>
                     </div>
+
+                    {/* Correct Answer */}
+                    {vc.correct_answer && (
+                      <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                        <h4 className="text-xs font-medium text-emerald-400 uppercase tracking-wide mb-1">Correct Answer</h4>
+                        <p className="text-sm text-emerald-300 leading-relaxed">{vc.correct_answer}</p>
+                      </div>
+                    )}
+
+                    {/* Temporal Note */}
+                    {vc.temporal_note && (
+                      <div className="mt-3 p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <Timer className="h-3 w-3 text-orange-400" />
+                          <h4 className="text-xs font-medium text-orange-400 uppercase tracking-wide">Temporal Context</h4>
+                        </div>
+                        <p className="text-sm text-orange-300 leading-relaxed">{vc.temporal_note}</p>
+                      </div>
+                    )}
+
+                    {/* Conflicting Sources */}
+                    {vc.conflicting_sources && vc.conflicting_sources.length > 0 && (
+                      <div className="mt-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+                        <div className="flex items-center gap-1.5 mb-1.5">
+                          <GitBranch className="h-3 w-3 text-purple-400" />
+                          <h4 className="text-xs font-medium text-purple-400 uppercase tracking-wide">Conflicting Sources</h4>
+                        </div>
+                        <ul className="space-y-1">
+                          {vc.conflicting_sources.map((cs, i) => (
+                            <li key={i} className="text-sm text-purple-300 leading-relaxed flex items-start gap-2">
+                              <span className="text-purple-500 mt-1">•</span>
+                              {cs}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
                     {/* Evidence Sources - max 3 */}
                     {vc.evidence.length > 0 && (

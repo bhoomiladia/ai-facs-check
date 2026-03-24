@@ -87,27 +87,33 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
               </TabsContent>
 
               <TabsContent value="url" className="mt-0 space-y-2">
-                <Label htmlFor="url-input" className="text-slate-500 text-xs">Article or webpage URL</Label>
-                <Input
-                  id="url-input"
-                  type="url"
-                  placeholder="https://example.com/article"
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="bg-slate-900/60 border-slate-700/40 text-white text-sm placeholder:text-slate-600 rounded-lg"
-                />
+                <div className="min-h-[148px] flex flex-col pt-1 space-y-3">
+                  <Label htmlFor="url-input" className="text-slate-500 text-xs">Article or webpage URL</Label>
+                  <Input
+                    id="url-input"
+                    type="url"
+                    placeholder="https://example.com/article"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && isValid) handleSubmit() }}
+                    className="bg-slate-900/60 border-slate-700/40 text-white text-sm placeholder:text-slate-600 rounded-lg"
+                  />
+                </div>
               </TabsContent>
 
               <TabsContent value="image" className="mt-0 space-y-2">
-                <Label htmlFor="image-input" className="text-slate-500 text-xs">Image URL to analyze</Label>
-                <Input
-                  id="image-input"
-                  type="url"
-                  placeholder="https://example.com/image.jpg"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="bg-slate-900/60 border-slate-700/40 text-white text-sm placeholder:text-slate-600 rounded-lg"
-                />
+                <div className="min-h-[148px] flex flex-col pt-1 space-y-3">
+                  <Label htmlFor="image-input" className="text-slate-500 text-xs">Image URL to analyze</Label>
+                  <Input
+                    id="image-input"
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' && isValid) handleSubmit() }}
+                    className="bg-slate-900/60 border-slate-700/40 text-white text-sm placeholder:text-slate-600 rounded-lg"
+                  />
+                </div>
               </TabsContent>
             </Tabs>
 
