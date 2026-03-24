@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { FileText, Link, Image, Search, Cpu, ShieldCheck, ArrowRight } from 'lucide-react'
+import { FileText, Link, Image, Search, Cpu, ShieldCheck, ArrowRight, Mic, MicOff } from 'lucide-react'
 
 interface VerificationInputProps {
   onStartVerification: (text: string, url?: string, imageUrl?: string) => void
@@ -40,11 +40,136 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
   const [imageUrl, setImageUrl] = useState('')
   const [activeTab, setActiveTab] = useState('text')
   const [exIdx, setExIdx] = useState(0)
+  const [isListening, setIsListening] = useState(false)
+  const [interimTranscript, setInterimTranscript] = useState('')
+  const recognitionRef = useRef<any>(null)
+  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const committedTextRef = useRef('')
 
   useEffect(() => {
     const t = setInterval(() => setExIdx(i => (i + 1) % textExamples.length), 4000)
     return () => clearInterval(t)
   }, [])
+
+  // Cleanup speech recognition + silence timer on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort()
+        recognitionRef.current = null
+      }
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current)
+        silenceTimerRef.current = null
+      }
+    }
+  }, [])
+
+  const resetSilenceTimer = useCallback(() => {
+    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current)
+    silenceTimerRef.current = setTimeout(() => {
+      // 5 seconds of silence → auto-stop
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+    }, 5000)
+  }, [])
+
+  const startListening = useCallback(() => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      alert('Voice input is not supported in this browser. Please try Chrome or Edge.')
+      return
+    }
+
+    // Save current text as the committed baseline
+    committedTextRef.current = text
+
+    const recognition = new SpeechRecognition()
+    recognition.lang = 'en-US'
+    recognition.interimResults = true
+    recognition.continuous = true
+    recognition.maxAlternatives = 1
+
+    recognition.onresult = (event: any) => {
+      let finalTranscript = ''
+      let interim = ''
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0].transcript
+        if (event.results[i].isFinal) {
+          finalTranscript += transcript
+        } else {
+          interim += transcript
+        }
+      }
+
+      // Commit final results to the text
+      if (finalTranscript) {
+        const trimmed = finalTranscript.trim()
+        committedTextRef.current = committedTextRef.current
+          ? committedTextRef.current + ' ' + trimmed
+          : trimmed
+        setText(committedTextRef.current)
+        setInterimTranscript('')
+      }
+
+      // Show interim (in-progress) words
+      if (interim) {
+        setInterimTranscript(interim)
+      }
+
+      // Reset the 5s silence timer on any speech activity
+      resetSilenceTimer()
+    }
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error)
+      setIsListening(false)
+      setInterimTranscript('')
+      recognitionRef.current = null
+      if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current)
+    }
+
+    recognition.onend = () => {
+      // Commit any remaining interim text
+      setInterimTranscript('')
+      setIsListening(false)
+      recognitionRef.current = null
+      if (silenceTimerRef.current) {
+        clearTimeout(silenceTimerRef.current)
+        silenceTimerRef.current = null
+      }
+    }
+
+    recognitionRef.current = recognition
+    recognition.start()
+    setIsListening(true)
+    setActiveTab('text')
+    resetSilenceTimer()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [text, resetSilenceTimer])
+
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop()
+      recognitionRef.current = null
+    }
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current)
+      silenceTimerRef.current = null
+    }
+    setInterimTranscript('')
+    setIsListening(false)
+  }, [])
+
+  const toggleVoiceInput = useCallback(() => {
+    if (isListening) {
+      stopListening()
+    } else {
+      startListening()
+    }
+  }, [isListening, startListening, stopListening])
 
   const handleSubmit = () => {
     if (activeTab === 'text' && text.trim()) onStartVerification(text.trim())
@@ -82,13 +207,39 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
               </TabsList>
 
               <TabsContent value="text" className="mt-0">
-                <Textarea
-                  id="text-input"
-                  placeholder={`e.g. "${textExamples[exIdx]}"`}
-                  value={text}
-                  onChange={(e) => setText(e.target.value)}
-                  className="min-h-[120px] bg-background border-foreground text-foreground text-sm placeholder:text-foreground/40 resize-none rounded-none"
-                />
+                <div className="relative">
+                  <Textarea
+                    id="text-input"
+                    placeholder={isListening ? 'Listening... speak now' : `e.g. "${textExamples[exIdx]}"`}
+                    value={isListening && interimTranscript
+                      ? (text ? text + ' ' + interimTranscript : interimTranscript)
+                      : text}
+                    onChange={(e) => {
+                      if (!isListening) setText(e.target.value)
+                    }}
+                    readOnly={isListening}
+                    className={`min-h-[120px] bg-background border-foreground text-foreground text-sm placeholder:text-foreground/40 resize-none rounded-none pr-12 ${
+                      isListening ? 'border-red-500 border-2' : ''
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleVoiceInput}
+                    title={isListening ? 'Stop listening' : 'Start voice input'}
+                    className={`absolute top-2 right-2 p-2 rounded-none border transition-all duration-200 ${
+                      isListening
+                        ? 'bg-red-500 border-red-500 text-white animate-pulse hover:bg-red-600'
+                        : 'bg-muted border-foreground/30 text-foreground/60 hover:bg-foreground hover:text-background'
+                    }`}
+                  >
+                    {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+                  </button>
+                </div>
+                {isListening && (
+                  <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest mt-1.5 animate-pulse">
+                    ● Recording — stops after 5s silence · click mic to stop
+                  </p>
+                )}
                 <div className="mt-3">
                   <span className="text-[10px] text-foreground/50 font-bold uppercase tracking-widest block mb-2">Try an example:</span>
                   <div className="flex flex-wrap gap-2">
