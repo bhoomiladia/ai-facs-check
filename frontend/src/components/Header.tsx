@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Scan, Fingerprint, Film } from 'lucide-react'
+import { Scan, Fingerprint, Film, AudioWaveform } from 'lucide-react'
 
 export function Header() {
   const pathname = usePathname()
@@ -31,6 +31,13 @@ export function Header() {
             >
               <Film className="h-3 w-3" />
               Video Detection
+            </Link>
+            <Link
+              href="/audio-detection"
+              className={`nav-link flex items-center gap-1.5 ${pathname === '/audio-detection' ? 'active' : ''}`}
+            >
+              <AudioWaveform className="h-3 w-3" />
+              Audio Detection
             </Link>
             <Link
               href="/detect-ai"
