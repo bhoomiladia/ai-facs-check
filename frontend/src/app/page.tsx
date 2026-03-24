@@ -171,12 +171,7 @@ export default function Home() {
                     </p>
                   </div>
                   
-                  <div className="panel-accent p-6 mt-8">
-                    <h5 className="font-bold text-lg uppercase text-center mb-2">Subscribe to Truth</h5>
-                    <p className="text-sm text-center italic mb-4">Receive daily fact-checked summaries.</p>
-                    <input type="email" placeholder="Your telegraph address" className="w-full bg-white border border-foreground p-2 mb-3 rounded-none" />
-                    <button className="w-full btn-verify text-sm py-2">Subscribe</button>
-                  </div>
+
                 </div>
               </div>
             </div>
