@@ -35,10 +35,10 @@ export async function POST(request: NextRequest) {
 
         const html = response.data
         const $ = cheerio.load(html)
-        
+        //cool shit
         // Remove scripts, styles, and junk
         $('script, style, noscript, iframe, nav, footer, header, aside').remove()
-        
+
         // Extract meaningful text
         content = $('p, h1, h2, h3, h4, h5, h6, li, article, main')
           .text()
