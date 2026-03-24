@@ -26,13 +26,13 @@ export class LLMProvider {
   async invoke(messages: BaseMessage[]): Promise<BaseMessage> {
     try {
       console.log('Attempting to invoke Groq (Primary)...')
-      const response = await this.primaryLLM.invoke(messages)
-      return response
+      const response = await this.primaryLLM.invoke(messages as any)
+      return response as any
     } catch (error) {
       console.warn('Groq failed, falling back to Gemini:', error)
       try {
-        const response = await this.fallbackLLM.invoke(messages)
-        return response
+        const response = await this.fallbackLLM.invoke(messages as any)
+        return response as any
       } catch (fallbackError) {
         console.error('All LLM providers failed:', fallbackError)
         throw fallbackError
@@ -40,11 +40,11 @@ export class LLMProvider {
     }
   }
 
-  getPrimary(): BaseChatModel {
+  getPrimary(): any {
     return this.primaryLLM
   }
 
-  getFallback(): BaseChatModel {
+  getFallback(): any {
     return this.fallbackLLM
   }
 }
