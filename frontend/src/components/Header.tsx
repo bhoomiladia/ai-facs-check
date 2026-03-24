@@ -8,14 +8,14 @@ export function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="border-b border-indigo-500/10 bg-slate-950/90 backdrop-blur-md sticky top-0 z-50">
+    <header className="border-b-2 border-foreground bg-background sticky top-0 z-50 mb-6">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-              <Shield className="h-4 w-4 text-white" />
+            <div className="w-8 h-8 border-2 border-foreground flex items-center justify-center bg-foreground">
+              <Shield className="h-4 w-4 text-background" />
             </div>
-            <span className="text-base font-bold text-white tracking-tight">FactCheck AI</span>
+            <span className="text-base font-black text-foreground tracking-tight uppercase">FactCheck AI</span>
           </Link>
           <div className="hidden sm:flex items-center gap-1 ml-2">
             <Link
@@ -33,7 +33,7 @@ export function Header() {
             </Link>
           </div>
         </div>
-        <span className="text-[11px] text-slate-600 tracking-wider uppercase hidden md:block">
+        <span className="text-[11px] text-foreground/60 tracking-widest uppercase hidden md:block font-bold">
           AI Verification Engine
         </span>
       </div>

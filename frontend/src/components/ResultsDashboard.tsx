@@ -36,11 +36,11 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
 
   const getOverallVerdict = () => {
     const { true_claims, false_claims, partially_true_claims, total_claims } = result.metadata
-    if (total_claims === 0) return { label: 'No Claims', color: 'text-slate-400', bg: 'from-slate-500/20 to-slate-600/20', border: 'border-slate-500/30', icon: AlertTriangle }
+    if (total_claims === 0) return { label: 'No Claims', color: 'text-foreground/60', bg: 'bg-muted', border: 'border-foreground/30', icon: AlertTriangle }
     const trueRatio = (true_claims + partially_true_claims * 0.5) / total_claims
-    if (trueRatio >= 0.7) return { label: 'Mostly True', color: 'text-green-400', bg: 'from-green-500/10 to-emerald-500/10', border: 'border-green-500/20', icon: CheckCircle }
-    if (trueRatio <= 0.3) return { label: 'Mostly False', color: 'text-red-400', bg: 'from-red-500/10 to-rose-500/10', border: 'border-red-500/20', icon: XCircle }
-    return { label: 'Mixed Results', color: 'text-yellow-400', bg: 'from-yellow-500/10 to-amber-500/10', border: 'border-yellow-500/20', icon: AlertTriangle }
+    if (trueRatio >= 0.7) return { label: 'Mostly True', color: 'text-emerald-800', bg: 'bg-emerald-50', border: 'border-emerald-800', icon: CheckCircle }
+    if (trueRatio <= 0.3) return { label: 'Mostly False', color: 'text-red-800', bg: 'bg-red-50', border: 'border-red-800', icon: XCircle }
+    return { label: 'Mixed Results', color: 'text-amber-800', bg: 'bg-amber-50', border: 'border-amber-800', icon: AlertTriangle }
   }
 
   const verdict = getOverallVerdict()
@@ -49,13 +49,13 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
 
   const getStatusConfig = (status: string) => {
     switch (status) {
-      case 'True': return { icon: CheckCircle, color: 'text-green-400', bg: 'bg-green-500/10', border: 'border-green-500/20', barColor: 'bg-green-500' }
-      case 'False': return { icon: XCircle, color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/20', barColor: 'bg-red-500' }
-      case 'Partially True': return { icon: AlertTriangle, color: 'text-yellow-400', bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', barColor: 'bg-yellow-500' }
-      case 'Outdated': return { icon: Timer, color: 'text-orange-400', bg: 'bg-orange-500/10', border: 'border-orange-500/20', barColor: 'bg-orange-500' }
-      case 'Disputed': return { icon: GitBranch, color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20', barColor: 'bg-purple-500' }
-      case 'Insufficient Context': return { icon: HelpCircle, color: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/20', barColor: 'bg-slate-500' }
-      default: return { icon: AlertTriangle, color: 'text-slate-400', bg: 'bg-slate-500/10', border: 'border-slate-500/20', barColor: 'bg-slate-500' }
+      case 'True': return { icon: CheckCircle, color: 'text-emerald-800', bg: 'bg-emerald-50', border: 'border-emerald-800', barColor: 'bg-emerald-700' }
+      case 'False': return { icon: XCircle, color: 'text-red-800', bg: 'bg-red-50', border: 'border-red-800', barColor: 'bg-red-700' }
+      case 'Partially True': return { icon: AlertTriangle, color: 'text-amber-800', bg: 'bg-amber-50', border: 'border-amber-800', barColor: 'bg-amber-600' }
+      case 'Outdated': return { icon: Timer, color: 'text-orange-800', bg: 'bg-orange-50', border: 'border-orange-800', barColor: 'bg-orange-600' }
+      case 'Disputed': return { icon: GitBranch, color: 'text-purple-800', bg: 'bg-purple-50', border: 'border-purple-800', barColor: 'bg-purple-600' }
+      case 'Insufficient Context': return { icon: HelpCircle, color: 'text-foreground/60', bg: 'bg-muted', border: 'border-foreground/30', barColor: 'bg-foreground/40' }
+      default: return { icon: AlertTriangle, color: 'text-foreground/60', bg: 'bg-muted', border: 'border-foreground/30', barColor: 'bg-foreground/40' }
     }
   }
 
@@ -67,13 +67,13 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
   return (
     <div className="max-w-5xl mx-auto space-y-5 animate-slide-up">
       {/* ─── Verdict Banner ─── */}
-      <div className={`relative overflow-hidden rounded-xl border ${verdict.border} ${verdict.bg} p-5 panel`}>
-        <div className="flex items-center justify-between">
+      <div className={`relative overflow-hidden border-2 ${verdict.border} ${verdict.bg} p-5 panel`}>
+        <div className="flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-5">
             {/* Gauge */}
             <div className="relative w-20 h-20 flex-shrink-0">
               <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="8" />
+                <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,0,0,0.1)" strokeWidth="8" />
                 <circle
                   cx="50" cy="50" r="45" fill="none"
                   stroke="currentColor"
@@ -84,15 +84,15 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
                 />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className={`text-lg font-bold ${verdict.color}`}>{accuracyPct}%</span>
+                <span className={`text-lg font-black ${verdict.color}`}>{accuracyPct}%</span>
               </div>
             </div>
             <div>
               <div className={`flex items-center gap-2 mb-1`}>
                 <VerdictIcon className={`h-5 w-5 ${verdict.color}`} />
-                <h2 className={`text-2xl font-bold ${verdict.color}`}>{verdict.label}</h2>
+                <h2 className={`text-2xl font-black uppercase ${verdict.color}`}>{verdict.label}</h2>
               </div>
-              <p className="text-slate-400 text-sm">
+              <p className="text-foreground/60 text-sm italic">
                 {result.metadata.total_claims} claims analyzed • {result.processing_time.toFixed(1)}s
               </p>
             </div>
@@ -101,12 +101,12 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
             <Button
               onClick={() => exportVerificationAsPDF(result)}
               variant="outline"
-              className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 hover:text-indigo-200"
+              className="border-foreground text-foreground hover:bg-foreground hover:text-background rounded-none font-bold uppercase text-xs"
             >
               <Download className="h-4 w-4 mr-2" />
               Export PDF
             </Button>
-            <Button onClick={onStartNew} variant="outline" className="border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white">
+            <Button onClick={onStartNew} variant="outline" className="border-foreground text-foreground hover:bg-foreground hover:text-background rounded-none font-bold uppercase text-xs">
               <RotateCcw className="h-4 w-4 mr-2" />
               New Check
             </Button>
@@ -114,37 +114,37 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
         </div>
 
         {/* Mini stats row */}
-        <div className="flex gap-6 mt-5 pt-4 border-t border-white/5">
+        <div className="flex gap-6 mt-5 pt-4 border-t-2 border-foreground/20">
           <div className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4 text-green-400" />
-            <span className="text-sm text-slate-300"><span className="font-semibold text-white">{result.metadata.true_claims}</span> True</span>
+            <CheckCircle className="h-4 w-4 text-emerald-800" />
+            <span className="text-sm text-foreground/80"><span className="font-bold text-foreground">{result.metadata.true_claims}</span> True</span>
           </div>
           <div className="flex items-center gap-2">
-            <XCircle className="h-4 w-4 text-red-400" />
-            <span className="text-sm text-slate-300"><span className="font-semibold text-white">{result.metadata.false_claims}</span> False</span>
+            <XCircle className="h-4 w-4 text-red-800" />
+            <span className="text-sm text-foreground/80"><span className="font-bold text-foreground">{result.metadata.false_claims}</span> False</span>
           </div>
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4 text-yellow-400" />
-            <span className="text-sm text-slate-300"><span className="font-semibold text-white">{result.metadata.partially_true_claims}</span> Partial</span>
+            <AlertTriangle className="h-4 w-4 text-amber-800" />
+            <span className="text-sm text-foreground/80"><span className="font-bold text-foreground">{result.metadata.partially_true_claims}</span> Partial</span>
           </div>
           <div className="flex items-center gap-2 ml-auto">
-            <Clock className="h-4 w-4 text-slate-500" />
-            <span className="text-xs text-slate-500">{result.metadata.sources_consulted?.length || 0} sources consulted</span>
+            <Clock className="h-4 w-4 text-foreground/50" />
+            <span className="text-xs text-foreground/50 font-bold">{result.metadata.sources_consulted?.length || 0} sources consulted</span>
           </div>
         </div>
       </div>
 
       {/* ─── Image Analysis (if present) ─── */}
       {result.metadata.image_analysis && (
-        <Card className="bg-slate-900/50 border-slate-700/50">
+        <Card className="border-2 border-foreground bg-card">
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-white text-base">
-              <Image className="h-4 w-4 text-purple-400" />
+            <CardTitle className="flex items-center gap-2 text-foreground text-base font-black uppercase">
+              <Image className="h-4 w-4 text-foreground" />
               Image Analysis
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-300 leading-relaxed">
+            <p className="text-sm text-foreground/80 leading-relaxed">
               {showFullImageDesc
                 ? result.metadata.image_analysis.description
                 : truncateImageDesc(result.metadata.image_analysis.description)
@@ -153,7 +153,7 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
             {result.metadata.image_analysis.description.length > 200 && (
               <button
                 onClick={() => setShowFullImageDesc(!showFullImageDesc)}
-                className="mt-2 text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                className="mt-2 text-xs text-primary hover:underline flex items-center gap-1 font-bold"
               >
                 {showFullImageDesc ? <><ChevronUp className="h-3 w-3" /> Show Less</> : <><ChevronDown className="h-3 w-3" /> Show More</>}
               </button>
@@ -161,7 +161,7 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
             {result.metadata.image_analysis.objects && result.metadata.image_analysis.objects.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-3">
                 {result.metadata.image_analysis.objects.map((obj, i) => (
-                  <Badge key={i} variant="secondary" className="bg-slate-800 text-slate-400 border-slate-700 text-xs">
+                  <Badge key={i} variant="secondary" className="bg-muted text-foreground/80 border border-foreground text-xs rounded-none">
                     {obj}
                   </Badge>
                 ))}
@@ -173,8 +173,8 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
 
       {/* ─── Claims List ─── */}
       <div className="space-y-3">
-        <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-          <Shield className="h-5 w-5 text-blue-400" />
+        <h3 className="text-xl font-black text-foreground flex items-center gap-2 uppercase border-b-2 border-foreground pb-2">
+          <Shield className="h-5 w-5 text-foreground" />
           Verified Claims
         </h3>
 
@@ -186,7 +186,7 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
           return (
             <div
               key={vc.claim.id}
-              className={`rounded-xl border ${config.border} ${config.bg} transition-all duration-200 hover:border-opacity-50`}
+              className={`border-2 ${config.border} ${config.bg} transition-all duration-200`}
             >
               {/* Claim Header — always visible */}
               <button
@@ -195,26 +195,26 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
               >
                 <StatusIcon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${config.color}`} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-sm leading-relaxed">{vc.claim.text}</p>
+                  <p className="text-foreground text-sm leading-relaxed font-medium">{vc.claim.text}</p>
                   {/* Confidence bar */}
                   <div className="flex items-center gap-3 mt-2">
-                    <Badge variant="secondary" className={`${config.bg} ${config.color} border ${config.border} text-xs`}>
+                    <Badge variant="secondary" className={`${config.bg} ${config.color} border ${config.border} text-xs rounded-none font-bold`}>
                       {vc.status}
                     </Badge>
                     <div className="flex-1 max-w-[120px]">
-                      <div className="confidence-bar">
-                        <div className={`confidence-bar-fill ${config.barColor}`} style={{ width: `${Math.round(vc.confidence * 100)}%` }} />
+                      <div className="conf-bar">
+                        <div className={`conf-bar-fill ${config.barColor}`} style={{ width: `${Math.round(vc.confidence * 100)}%` }} />
                       </div>
                     </div>
-                    <span className={`text-xs font-medium ${config.color}`}>
+                    <span className={`text-xs font-bold ${config.color}`}>
                       {Math.round(vc.confidence * 100)}%
                     </span>
                   </div>
                 </div>
                 <div className="flex-shrink-0 mt-1">
                   {isExpanded
-                    ? <ChevronUp className="h-4 w-4 text-slate-500" />
-                    : <ChevronDown className="h-4 w-4 text-slate-500" />
+                    ? <ChevronUp className="h-4 w-4 text-foreground/50" />
+                    : <ChevronDown className="h-4 w-4 text-foreground/50" />
                   }
                 </div>
               </button>
@@ -222,43 +222,43 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
               {/* Expanded Details */}
               <div className={`expand-collapse ${isExpanded ? 'open' : ''}`}>
                 <div>
-                  <div className="px-4 pb-4 pt-0 border-t border-white/5 space-y-4">
+                  <div className="px-4 pb-4 pt-0 border-t-2 border-foreground/10 space-y-4">
                     {/* Reasoning */}
                     <div className="mt-3">
-                      <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">Analysis</h4>
-                      <p className="text-sm text-slate-300 leading-relaxed">{vc.reasoning}</p>
+                      <h4 className="text-xs font-black text-foreground/60 uppercase tracking-wide mb-1.5">Analysis</h4>
+                      <p className="text-sm text-foreground/80 leading-relaxed">{vc.reasoning}</p>
                     </div>
 
                     {/* Correct Answer */}
                     {vc.correct_answer && (
-                      <div className="mt-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-                        <h4 className="text-xs font-medium text-emerald-400 uppercase tracking-wide mb-1">Correct Answer</h4>
-                        <p className="text-sm text-emerald-300 leading-relaxed">{vc.correct_answer}</p>
+                      <div className="mt-3 p-3 bg-emerald-50 border-2 border-emerald-800">
+                        <h4 className="text-xs font-black text-emerald-800 uppercase tracking-wide mb-1">Correct Answer</h4>
+                        <p className="text-sm text-emerald-900 leading-relaxed">{vc.correct_answer}</p>
                       </div>
                     )}
 
                     {/* Temporal Note */}
                     {vc.temporal_note && (
-                      <div className="mt-3 p-3 bg-orange-500/10 border border-orange-500/20 rounded-lg">
+                      <div className="mt-3 p-3 bg-orange-50 border-2 border-orange-800">
                         <div className="flex items-center gap-1.5 mb-1">
-                          <Timer className="h-3 w-3 text-orange-400" />
-                          <h4 className="text-xs font-medium text-orange-400 uppercase tracking-wide">Temporal Context</h4>
+                          <Timer className="h-3 w-3 text-orange-800" />
+                          <h4 className="text-xs font-black text-orange-800 uppercase tracking-wide">Temporal Context</h4>
                         </div>
-                        <p className="text-sm text-orange-300 leading-relaxed">{vc.temporal_note}</p>
+                        <p className="text-sm text-orange-900 leading-relaxed">{vc.temporal_note}</p>
                       </div>
                     )}
 
                     {/* Conflicting Sources */}
                     {vc.conflicting_sources && vc.conflicting_sources.length > 0 && (
-                      <div className="mt-3 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
+                      <div className="mt-3 p-3 bg-purple-50 border-2 border-purple-800">
                         <div className="flex items-center gap-1.5 mb-1.5">
-                          <GitBranch className="h-3 w-3 text-purple-400" />
-                          <h4 className="text-xs font-medium text-purple-400 uppercase tracking-wide">Conflicting Sources</h4>
+                          <GitBranch className="h-3 w-3 text-purple-800" />
+                          <h4 className="text-xs font-black text-purple-800 uppercase tracking-wide">Conflicting Sources</h4>
                         </div>
                         <ul className="space-y-1">
                           {vc.conflicting_sources.map((cs, i) => (
-                            <li key={i} className="text-sm text-purple-300 leading-relaxed flex items-start gap-2">
-                              <span className="text-purple-500 mt-1">•</span>
+                            <li key={i} className="text-sm text-purple-900 leading-relaxed flex items-start gap-2">
+                              <span className="text-purple-600 mt-1">•</span>
                               {cs}
                             </li>
                           ))}
@@ -269,18 +269,18 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
                     {/* Evidence Sources - max 3 */}
                     {vc.evidence.length > 0 && (
                       <div>
-                        <h4 className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">Sources ({Math.min(vc.evidence.length, 3)})</h4>
+                        <h4 className="text-xs font-black text-foreground/60 uppercase tracking-wide mb-2">Sources ({Math.min(vc.evidence.length, 3)})</h4>
                         <div className="space-y-2">
                           {vc.evidence.slice(0, 3).map((ev, i) => (
-                            <div key={i} className="flex items-center gap-3 p-2.5 bg-slate-800/50 rounded-lg">
+                            <div key={i} className="flex items-center gap-3 p-2.5 bg-muted border border-foreground/20">
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm text-white truncate">{ev.title}</p>
+                                <p className="text-sm text-foreground font-medium truncate">{ev.title}</p>
                                 <div className="flex items-center gap-2 mt-0.5">
-                                  <Badge variant="secondary" className="bg-slate-700/50 text-slate-400 border-0 text-[10px]">
+                                  <Badge variant="secondary" className="bg-background text-foreground/70 border border-foreground/30 text-[10px] rounded-none">
                                     {ev.source}
                                   </Badge>
                                   {ev.publishedDate && (
-                                    <span className="text-[10px] text-slate-600">{ev.publishedDate}</span>
+                                    <span className="text-[10px] text-foreground/50">{ev.publishedDate}</span>
                                   )}
                                 </div>
                               </div>
@@ -288,7 +288,7 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
                                 href={ev.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex-shrink-0 p-1.5 rounded-md hover:bg-slate-700/50 text-blue-400 hover:text-blue-300 transition-colors"
+                                className="flex-shrink-0 p-1.5 hover:bg-muted text-primary hover:underline transition-colors"
                               >
                                 <ExternalLink className="h-3.5 w-3.5" />
                               </a>
@@ -312,15 +312,15 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
         !result.original_text.includes('window.') &&
         !result.original_text.includes('function ') &&
         !result.original_text.includes('<script') && (
-        <Card className="bg-slate-900/50 border-slate-700/50">
+        <Card className="border-2 border-foreground bg-card">
           <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-white text-base">
-              <FileText className="h-4 w-4 text-slate-400" />
+            <CardTitle className="flex items-center gap-2 text-foreground text-base font-black uppercase">
+              <FileText className="h-4 w-4 text-foreground/60" />
               Original Text
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-400 leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-foreground/70 leading-relaxed whitespace-pre-wrap">
               {result.original_text}
             </p>
           </CardContent>

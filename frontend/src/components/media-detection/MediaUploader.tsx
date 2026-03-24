@@ -78,27 +78,27 @@ export function MediaUploader({ onMediaSelected }: MediaUploaderProps) {
       {preview ? (
         <div className="panel p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-white">Media Preview</h3>
-            <button onClick={clearPreview} className="text-slate-500 hover:text-white transition-colors">
+            <h3 className="text-sm font-black text-foreground uppercase">Media Preview</h3>
+            <button onClick={clearPreview} className="text-foreground/50 hover:text-foreground transition-colors">
               <X className="h-4 w-4" />
             </button>
           </div>
-          <div className="media-preview-overlay bg-slate-900/60 flex items-center justify-center p-4 min-h-[200px]">
+          <div className="media-preview-overlay bg-muted flex items-center justify-center p-4 min-h-[200px]">
             {preview.type === 'image' ? (
               <img
                 src={preview.url}
                 alt={preview.name}
-                className="max-h-[280px] rounded-lg object-contain"
+                className="max-h-[280px] object-contain"
               />
             ) : (
-              <div className="flex flex-col items-center gap-3 text-slate-400">
+              <div className="flex flex-col items-center gap-3 text-foreground/60">
                 <Music className="h-12 w-12" />
                 <span className="text-sm">{preview.name}</span>
                 <audio controls src={preview.url} className="w-full max-w-md" />
               </div>
             )}
           </div>
-          <div className="flex items-center justify-between text-xs text-slate-500">
+          <div className="flex items-center justify-between text-xs text-foreground/50 font-bold">
             <span>{preview.name}</span>
             {preview.size && (
               <span>{(preview.size / 1024).toFixed(1)} KB</span>
@@ -118,10 +118,10 @@ export function MediaUploader({ onMediaSelected }: MediaUploaderProps) {
           <div className="flex items-center gap-2 justify-center">
             <button
               onClick={() => setMode('upload')}
-              className={`px-4 py-2 rounded-lg text-xs font-medium transition-all ${
+              className={`px-4 py-2 text-xs font-bold uppercase transition-all border ${
                 mode === 'upload'
-                  ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20'
-                  : 'text-slate-500 hover:text-slate-300'
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'text-foreground/60 hover:text-foreground border-foreground/30 hover:border-foreground'
               }`}
             >
               <Upload className="h-3.5 w-3.5 inline mr-1.5" />
@@ -129,10 +129,10 @@ export function MediaUploader({ onMediaSelected }: MediaUploaderProps) {
             </button>
             <button
               onClick={() => setMode('url')}
-              className={`px-4 py-2 rounded-lg text-xs font-medium transition-all ${
+              className={`px-4 py-2 text-xs font-bold uppercase transition-all border ${
                 mode === 'url'
-                  ? 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/20'
-                  : 'text-slate-500 hover:text-slate-300'
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'text-foreground/60 hover:text-foreground border-foreground/30 hover:border-foreground'
               }`}
             >
               <Link2 className="h-3.5 w-3.5 inline mr-1.5" />
@@ -157,23 +157,23 @@ export function MediaUploader({ onMediaSelected }: MediaUploaderProps) {
                 onChange={handleFileSelect}
               />
               <div className="flex flex-col items-center gap-3">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center border border-indigo-500/10">
-                  <Upload className="h-6 w-6 text-indigo-400" />
+                <div className="w-14 h-14 border-2 border-foreground bg-muted flex items-center justify-center">
+                  <Upload className="h-6 w-6 text-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm text-white font-medium">
+                  <p className="text-sm text-foreground font-bold uppercase">
                     Drop your media file here
                   </p>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-foreground/50 mt-1">
                     or click to browse • Images (JPG, PNG, WebP) & Audio (MP3, WAV, OGG)
                   </p>
                 </div>
                 <div className="flex items-center gap-3 mt-2">
-                  <span className="inline-flex items-center gap-1 text-[11px] text-slate-600">
+                  <span className="inline-flex items-center gap-1 text-[11px] text-foreground/60 font-bold">
                     <Image className="h-3 w-3" /> Images
                   </span>
-                  <span className="text-slate-800">|</span>
-                  <span className="inline-flex items-center gap-1 text-[11px] text-slate-600">
+                  <span className="text-foreground/30">|</span>
+                  <span className="inline-flex items-center gap-1 text-[11px] text-foreground/60 font-bold">
                     <Music className="h-3 w-3" /> Audio
                   </span>
                 </div>
@@ -181,7 +181,7 @@ export function MediaUploader({ onMediaSelected }: MediaUploaderProps) {
             </div>
           ) : (
             <div className="panel p-5 space-y-3">
-              <label className="text-xs text-slate-500">Media URL (image or audio)</label>
+              <label className="text-xs text-foreground/60 font-bold uppercase">Media URL (image or audio)</label>
               <div className="flex gap-2">
                 <input
                   type="url"
@@ -189,7 +189,7 @@ export function MediaUploader({ onMediaSelected }: MediaUploaderProps) {
                   onChange={(e) => setUrlInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleUrlSubmit()}
                   placeholder="https://example.com/image.jpg"
-                  className="flex-1 bg-slate-900/60 border border-slate-700/40 text-white text-sm placeholder:text-slate-600 rounded-lg px-3 py-2.5 outline-none focus:border-indigo-500/40 transition-colors"
+                  className="flex-1 bg-background border-2 border-foreground text-foreground text-sm placeholder:text-foreground/40 px-3 py-2.5 outline-none focus:border-primary transition-colors"
                 />
                 <button
                   onClick={handleUrlSubmit}

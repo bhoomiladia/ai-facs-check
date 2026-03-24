@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Playfair_Display } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const playfair = Playfair_Display({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Fact & Claim Verification System',
-  description: 'AI-powered system for extracting and verifying claims from text and URLs',
+  title: 'The Daily Verifier | Fact & Claim Check',
+  description: 'AI-powered truth analysis and fact-checking from reputable sources',
 }
 
 export default function RootLayout({
@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className={inter.className}>
+    <html lang="en">
+      <body className={playfair.className}>
         <div className="min-h-screen bg-background">
           {children}
         </div>

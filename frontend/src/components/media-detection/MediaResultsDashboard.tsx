@@ -14,55 +14,39 @@ interface MediaResultsDashboardProps {
 const VERDICT_CONFIG: Record<Verdict, { label: string; color: string; bg: string; ringColor: string; icon: React.ReactNode }> = {
   ai_generated: {
     label: 'AI Generated',
-    color: 'text-red-400',
-    bg: 'bg-red-500/15',
-    ringColor: '#f87171',
+    color: 'text-red-800',
+    bg: 'bg-red-50',
+    ringColor: '#991b1b',
     icon: <ShieldAlert className="h-5 w-5" />,
   },
   likely_ai: {
     label: 'Likely AI',
-    color: 'text-orange-400',
-    bg: 'bg-orange-500/15',
-    ringColor: '#fb923c',
+    color: 'text-orange-800',
+    bg: 'bg-orange-50',
+    ringColor: '#9a3412',
     icon: <AlertTriangle className="h-5 w-5" />,
   },
   inconclusive: {
     label: 'Inconclusive',
-    color: 'text-amber-400',
-    bg: 'bg-amber-500/15',
-    ringColor: '#fbbf24',
+    color: 'text-amber-800',
+    bg: 'bg-amber-50',
+    ringColor: '#92400e',
     icon: <ShieldQuestion className="h-5 w-5" />,
   },
   likely_authentic: {
     label: 'Likely Authentic',
-    color: 'text-emerald-400',
-    bg: 'bg-emerald-500/15',
-    ringColor: '#34d399',
+    color: 'text-emerald-800',
+    bg: 'bg-emerald-50',
+    ringColor: '#065f46',
     icon: <ShieldCheck className="h-5 w-5" />,
   },
   authentic: {
     label: 'Authentic',
-    color: 'text-green-400',
-    bg: 'bg-green-500/15',
-    ringColor: '#4ade80',
+    color: 'text-green-800',
+    bg: 'bg-green-50',
+    ringColor: '#166534',
     icon: <Shield className="h-5 w-5" />,
   },
-}
-
-function getScoreColor(score: number): string {
-  if (score >= 80) return '#f87171'
-  if (score >= 60) return '#fb923c'
-  if (score >= 40) return '#fbbf24'
-  if (score >= 20) return '#34d399'
-  return '#4ade80'
-}
-
-function getScoreGradient(score: number): string {
-  if (score >= 80) return 'from-red-500 to-red-400'
-  if (score >= 60) return 'from-orange-500 to-orange-400'
-  if (score >= 40) return 'from-amber-500 to-amber-400'
-  if (score >= 20) return 'from-emerald-500 to-emerald-400'
-  return 'from-green-500 to-green-400'
 }
 
 export function MediaResultsDashboard({ result, onStartNew }: MediaResultsDashboardProps) {
@@ -76,12 +60,12 @@ export function MediaResultsDashboard({ result, onStartNew }: MediaResultsDashbo
         <div className="grid md:grid-cols-[280px_1fr] gap-6 items-center">
           {/* Gauge */}
           <div className="flex flex-col items-center">
-            <div className="relative w-44 h-44 verdict-ring rounded-full">
+            <div className="relative w-44 h-44">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                 <circle
                   cx="50" cy="50" r="45"
                   fill="none"
-                  stroke="rgba(255,255,255,0.04)"
+                  stroke="rgba(0,0,0,0.08)"
                   strokeWidth="6"
                 />
                 <circle
@@ -94,11 +78,11 @@ export function MediaResultsDashboard({ result, onStartNew }: MediaResultsDashbo
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-bold text-white">{result.overallScore}%</span>
-                <span className="text-[11px] text-slate-500 mt-0.5">AI Detection Score</span>
+                <span className="text-3xl font-black text-foreground">{result.overallScore}%</span>
+                <span className="text-[11px] text-foreground/50 mt-0.5 font-bold uppercase">AI Detection Score</span>
               </div>
             </div>
-            <div className={`mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold ${verdict.color} ${verdict.bg}`}>
+            <div className={`mt-3 inline-flex items-center gap-1.5 px-3 py-1.5 border-2 text-xs font-black uppercase ${verdict.color} ${verdict.bg}`} style={{ borderColor: verdict.ringColor }}>
               {verdict.icon}
               {verdict.label}
             </div>
@@ -107,24 +91,24 @@ export function MediaResultsDashboard({ result, onStartNew }: MediaResultsDashbo
           {/* Right side info */}
           <div className="space-y-4">
             <div>
-              <h2 className="text-xl font-bold text-white">Detection Analysis Complete</h2>
-              <p className="text-sm text-slate-400 mt-1 mb-4">
+              <h2 className="text-xl font-black text-foreground uppercase">Detection Analysis Complete</h2>
+              <p className="text-sm text-foreground/60 mt-1 mb-4 italic">
                 Our forensic pipeline evaluated this {result.mediaType} to determine if it is AI-generated or synthetically manipulated.
               </p>
               
               {result.imageDescription && (
-                <div className="panel-accent p-4 border border-slate-700/50 rounded-xl mt-4 bg-slate-800/20">
-                  <h3 className="text-sm font-semibold text-slate-300 mb-2">Image Description</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">
+                <div className="panel-accent p-4 border-2 border-foreground/30 mt-4">
+                  <h3 className="text-sm font-black text-foreground uppercase mb-2">Image Description</h3>
+                  <p className="text-sm text-foreground/70 leading-relaxed">
                     {result.imageDescription}
                   </p>
                 </div>
               )}
 
               {result.analysisSummary && (
-                <div className="panel-accent p-4 border border-slate-700/50 rounded-xl mt-4 bg-slate-800/20">
-                  <h3 className="text-sm font-semibold text-slate-300 mb-2">Analysis Reasoning</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">
+                <div className="panel-accent p-4 border-2 border-foreground/30 mt-4">
+                  <h3 className="text-sm font-black text-foreground uppercase mb-2">Analysis Reasoning</h3>
+                  <p className="text-sm text-foreground/70 leading-relaxed">
                     {result.analysisSummary}
                   </p>
                 </div>
@@ -133,7 +117,7 @@ export function MediaResultsDashboard({ result, onStartNew }: MediaResultsDashbo
 
             <button
               onClick={onStartNew}
-              className="inline-flex items-center gap-2 text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-primary hover:underline font-bold uppercase"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               Analyze Another
@@ -142,10 +126,8 @@ export function MediaResultsDashboard({ result, onStartNew }: MediaResultsDashbo
         </div>
       </div>
 
-
-
       {/* Timestamp + restart */}
-      <div className="flex items-center justify-between text-xs text-slate-600 pb-4">
+      <div className="flex items-center justify-between text-xs text-foreground/50 pb-4 font-bold border-t-2 border-foreground pt-4">
         <span>Analyzed at {new Date(result.analyzedAt).toLocaleString()}</span>
         <button
           onClick={onStartNew}

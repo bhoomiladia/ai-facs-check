@@ -50,7 +50,6 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
             const base64Promise = new Promise<string>((resolve) => {
               reader.onloadend = () => {
                 const dataUrl = reader.result as string
-                // dataUrl = "data:image/jpeg;base64,xxxxx"
                 const base64 = dataUrl.split(',')[1]
                 resolve(base64)
               }
@@ -59,7 +58,6 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
             body.mediaBase64 = await base64Promise
             body.mimeType = media.mimeType || blob.type || 'image/jpeg'
           } catch {
-            // If blob conversion fails, just pass the URL
             body.mediaUrl = media.url
           }
         } else {
@@ -95,13 +93,11 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
     setCurrentStageIdx((prev) => {
       const next = prev + 1
       if (next >= STAGES.length) {
-        // All UI stages done — wait for API if needed, then deliver result
         const checkResult = () => {
           if (apiDoneRef.current) {
             if (apiResultRef.current) {
               onComplete(apiResultRef.current)
             }
-            // If error, it's already set in state
           } else {
             setTimeout(checkResult, 300)
           }
@@ -123,12 +119,10 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
     )
 
     let progress = 0
-    // If API is done and we're on the last stage, speed through
     const isLastStage = currentStageIdx === STAGES.length - 1
     const baseSpeed = isLastStage && apiDoneRef.current ? 25 : 8
 
     stageTimerRef.current = setInterval(() => {
-      // If API is done, speed up remaining stages
       const speed = apiDoneRef.current ? baseSpeed + 15 : baseSpeed + Math.random() * 10
       progress += speed
 
@@ -165,14 +159,14 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white">Analyzing Media</h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h3 className="text-lg font-black text-foreground uppercase">Analyzing Media</h3>
+            <p className="text-xs text-foreground/50 mt-0.5">
               Running {STAGES.length}-stage forensic analysis via Groq AI
             </p>
           </div>
           <button
             onClick={onCancel}
-            className="text-xs text-slate-500 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-slate-800/60"
+            className="text-xs text-foreground/50 hover:text-foreground transition-colors px-3 py-1.5 border border-foreground/30 hover:border-foreground font-bold uppercase"
           >
             Cancel
           </button>
@@ -180,16 +174,16 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
 
         {/* Media preview bar */}
         <div className="panel-accent p-3 flex items-center gap-3">
-          <div className="w-12 h-12 rounded-lg bg-slate-900/80 flex items-center justify-center overflow-hidden flex-shrink-0">
+          <div className="w-12 h-12 bg-muted border border-foreground flex items-center justify-center overflow-hidden flex-shrink-0">
             {media.type === 'image' ? (
               <img src={media.url} alt="" className="w-full h-full object-cover" />
             ) : (
-              <Music className="h-5 w-5 text-cyan-400" />
+              <Music className="h-5 w-5 text-foreground" />
             )}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-white truncate">{media.name}</p>
-            <p className="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5">
+            <p className="text-sm text-foreground font-medium truncate">{media.name}</p>
+            <p className="text-[11px] text-foreground/50 flex items-center gap-1.5 mt-0.5">
               {media.type === 'image' ? (
                 <Image className="h-3 w-3" />
               ) : (
@@ -203,14 +197,14 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
 
         {/* Error state */}
         {error && (
-          <div className="panel-accent p-4 border-red-500/20 bg-red-500/5 flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="panel-accent p-4 border-2 border-red-800 bg-red-50 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 text-red-800 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm text-red-300 font-medium">Analysis Failed</p>
-              <p className="text-xs text-red-400/70 mt-1">{error}</p>
+              <p className="text-sm text-red-800 font-bold">Analysis Failed</p>
+              <p className="text-xs text-red-700 mt-1">{error}</p>
               <button
                 onClick={onCancel}
-                className="mt-3 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="mt-3 text-xs text-primary hover:underline font-bold"
               >
                 ← Try again
               </button>
@@ -223,12 +217,12 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
           <>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400">Overall Progress</span>
-                <span className="text-indigo-400 font-mono">{Math.round(overallProgress)}%</span>
+                <span className="text-foreground/60 font-bold uppercase">Overall Progress</span>
+                <span className="text-foreground font-bold">{Math.round(overallProgress)}%</span>
               </div>
-              <div className="h-1.5 rounded-full bg-slate-800/80 overflow-hidden">
+              <div className="h-2 bg-muted border border-foreground overflow-hidden">
                 <div
-                  className="h-full rounded-full transition-all duration-300 ease-out bg-gradient-to-r from-indigo-500 to-purple-500"
+                  className="h-full transition-all duration-300 ease-out bg-foreground"
                   style={{ width: `${overallProgress}%` }}
                 />
               </div>
@@ -239,54 +233,54 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
               {stages.map((stage, i) => (
                 <div
                   key={stage.id}
-                  className={`rounded-xl border p-4 transition-all duration-300 ${
+                  className={`border-2 p-4 transition-all duration-300 ${
                     stage.status === 'running'
-                      ? 'stage-active border-indigo-500/20 bg-indigo-500/[0.03]'
+                      ? 'border-foreground bg-muted'
                       : stage.status === 'completed'
-                      ? 'border-emerald-500/15 bg-emerald-500/[0.02]'
-                      : 'border-slate-800/40 bg-slate-900/30 opacity-50'
+                      ? 'border-emerald-800 bg-emerald-50'
+                      : 'border-foreground/20 bg-background opacity-50'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="flex-shrink-0">
                       {stage.status === 'completed' ? (
                         <div className="stage-check-anim">
-                          <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                          <CheckCircle2 className="h-5 w-5 text-emerald-800" />
                         </div>
                       ) : stage.status === 'running' ? (
-                        <Loader2 className="h-5 w-5 text-indigo-400 animate-spin" />
+                        <Loader2 className="h-5 w-5 text-foreground animate-spin" />
                       ) : (
-                        <div className="w-5 h-5 rounded-full border border-slate-700 flex items-center justify-center">
-                          <span className="text-[10px] text-slate-600">{i + 1}</span>
+                        <div className="w-5 h-5 border-2 border-foreground/30 flex items-center justify-center">
+                          <span className="text-[10px] text-foreground/40 font-bold">{i + 1}</span>
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className={`text-sm font-medium ${
-                          stage.status === 'completed' ? 'text-emerald-300' :
-                          stage.status === 'running' ? 'text-white' : 'text-slate-500'
+                        <span className={`text-sm font-bold uppercase ${
+                          stage.status === 'completed' ? 'text-emerald-800' :
+                          stage.status === 'running' ? 'text-foreground' : 'text-foreground/40'
                         }`}>
                           {stage.label}
                         </span>
                         {stage.status === 'running' && (
-                          <span className="text-[11px] text-indigo-400 font-mono">
+                          <span className="text-[11px] text-foreground font-bold">
                             {Math.round(stage.progress)}%
                           </span>
                         )}
                         {stage.status === 'completed' && (
-                          <span className="text-[10px] text-emerald-500 font-mono">DONE</span>
+                          <span className="text-[10px] text-emerald-800 font-black uppercase">DONE</span>
                         )}
                       </div>
                       {stage.status === 'running' && (
-                        <p className="text-[11px] text-slate-500 mt-1">{stage.description}</p>
+                        <p className="text-[11px] text-foreground/50 mt-1 italic">{stage.description}</p>
                       )}
                     </div>
                   </div>
                   {stage.status === 'running' && (
-                    <div className="mt-3 h-1 rounded-full bg-slate-800/80 overflow-hidden">
+                    <div className="mt-3 h-1 bg-muted border border-foreground/30 overflow-hidden">
                       <div
-                        className="h-full rounded-full progress-shimmer transition-all duration-200"
+                        className="h-full bg-foreground transition-all duration-200"
                         style={{ width: `${stage.progress}%` }}
                       />
                     </div>

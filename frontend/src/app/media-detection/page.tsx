@@ -33,33 +33,10 @@ export default function MediaDetectionPage() {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Graphical Background */}
-      <div className="scene-bg">
-        <div className="dot-grid" />
-        <div className="scan-line" />
-        <div className="geo-shape geo-1" />
-        <div className="geo-shape geo-2" />
-        <div className="geo-shape geo-3" />
-        <div className="geo-shape geo-4" />
-        <div className="connection-lines">
-          <svg>
-            <line className="conn-line" x1="10%" y1="20%" x2="45%" y2="55%" />
-            <line className="conn-line" x1="90%" y1="15%" x2="55%" y2="50%" />
-            <line className="conn-line" x1="20%" y1="80%" x2="60%" y2="45%" />
-            <line className="conn-line" x1="80%" y1="75%" x2="50%" y2="40%" />
-          </svg>
-        </div>
-        <div className="pulse-dot" />
-        <div className="pulse-dot" />
-        <div className="pulse-dot" />
-        <div className="pulse-dot" />
-        <div className="pulse-dot" />
-      </div>
-
       {/* Content */}
       <div className="relative z-10">
         <Header />
-        <main className="container mx-auto px-4 py-6">
+        <main className="container mx-auto px-4 py-6 max-w-6xl">
           {view === 'upload' && (
             <>
               <MediaDetectionHero />

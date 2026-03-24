@@ -59,9 +59,9 @@ export function HighlightedText({ text, verifiedClaims, onClaimClick }: Highligh
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'True': return <CheckCircle className="h-3 w-3 text-green-400" />
-      case 'False': return <XCircle className="h-3 w-3 text-red-400" />
-      case 'Partially True': return <AlertTriangle className="h-3 w-3 text-yellow-400" />
+      case 'True': return <CheckCircle className="h-3 w-3 text-emerald-800" />
+      case 'False': return <XCircle className="h-3 w-3 text-red-800" />
+      case 'Partially True': return <AlertTriangle className="h-3 w-3 text-amber-800" />
       default: return null
     }
   }
@@ -69,8 +69,8 @@ export function HighlightedText({ text, verifiedClaims, onClaimClick }: Highligh
   const segments = createHighlightedSegments()
 
   return (
-    <div className="prose prose-invert max-w-none">
-      <div className="text-slate-300 leading-relaxed text-sm">
+    <div className="max-w-none">
+      <div className="text-foreground/80 leading-relaxed text-sm">
         {segments.map((segment, index) => (
           <span key={index}>
             {segment.isHighlighted && segment.claim ? (
@@ -85,11 +85,11 @@ export function HighlightedText({ text, verifiedClaims, onClaimClick }: Highligh
                 </span>
                 {/* Tooltip */}
                 {hoveredClaim === segment.claim.claim.id && (
-                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-50 whitespace-nowrap text-xs flex items-center gap-1.5 pointer-events-none animate-fade-in-up">
+                  <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-foreground text-background border-2 border-foreground shadow-xl z-50 whitespace-nowrap text-xs flex items-center gap-1.5 pointer-events-none">
                     {getStatusIcon(segment.claim.status)}
-                    <span className="text-white font-medium">{segment.claim.status}</span>
-                    <span className="text-slate-500">•</span>
-                    <span className="text-slate-400">{Math.round(segment.claim.confidence * 100)}%</span>
+                    <span className="font-bold">{segment.claim.status}</span>
+                    <span className="text-background/50">•</span>
+                    <span className="text-background/80">{Math.round(segment.claim.confidence * 100)}%</span>
                   </span>
                 )}
               </span>
@@ -101,20 +101,20 @@ export function HighlightedText({ text, verifiedClaims, onClaimClick }: Highligh
       </div>
 
       {/* Legend */}
-      <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-500">
+      <div className="mt-4 flex flex-wrap gap-4 text-xs text-foreground/60 font-bold uppercase">
         <div className="flex items-center gap-1.5">
-          <span className="w-5 h-0.5 bg-green-500 rounded" />
+          <span className="w-5 h-1 bg-emerald-700" />
           <span>True</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-5 h-0.5 bg-red-500 rounded" />
+          <span className="w-5 h-1 bg-red-700" />
           <span>False</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="w-5 h-0.5 bg-yellow-500 rounded" />
+          <span className="w-5 h-1 bg-amber-600" />
           <span>Partial</span>
         </div>
-        <span className="text-slate-600">• Hover for details</span>
+        <span className="text-foreground/40">• Hover for details</span>
       </div>
     </div>
   )
