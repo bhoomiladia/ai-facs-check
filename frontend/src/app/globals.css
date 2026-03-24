@@ -41,9 +41,12 @@
 @layer base {
   * { @apply border-border; }
   body { 
-    @apply bg-background text-foreground; 
+    @apply text-foreground; 
     /* Set a subtle paper texture background */
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    background-color: #FDFCF0;
+    /* Adding a noticeable paper grain */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+    background-blend-mode: multiply;
   }
 }
 
@@ -383,4 +386,84 @@
   border-top-color: hsl(var(--foreground));
   border-radius: 50%;
   animation: ai-spin 0.8s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   NEW INTERACTIVE EDITORIAL ANIMATIONS
+   ═══════════════════════════════════════════════ */
+
+/* Ink-Bleed Loading Animation */
+@keyframes ink-bleed {
+  0% { filter: blur(0px) contrast(1); opacity: 1; transform: scale(1); }
+  50% { filter: blur(2px) contrast(1.2); opacity: 0.8; transform: scale(1.02); }
+  100% { filter: blur(0px) contrast(1); opacity: 1; transform: scale(1); }
+}
+.ink-bleed {
+  animation: ink-bleed 2s ease-in-out infinite;
+  color: hsl(var(--foreground));
+  text-shadow: 0 0 8px rgba(0,0,0,0.3);
+}
+
+/* Ticker Scroll Animation */
+@keyframes ticker-scroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+.animate-ticker-scroll {
+  animation: ticker-scroll 30s linear infinite;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+/* Redline Strikethrough */
+.redline-strike {
+  position: relative;
+  display: inline-block;
+  color: hsl(var(--muted-foreground));
+}
+.redline-strike::after {
+  content: '';
+  position: absolute;
+  left: -2%;
+  top: 50%;
+  width: 104%;
+  height: 3px;
+  background-color: hsl(var(--destructive));
+  transform: rotate(-1deg) translateY(-50%);
+  border-radius: 1px;
+  opacity: 0.85;
+}
+
+/* Typewriter Cursor Blink */
+@keyframes blink-cursor {
+  0%, 100% { border-right-color: transparent; }
+  50% { border-right-color: hsl(var(--foreground)); }
+}
+.typewriter-cursor {
+  border-right: 3px solid hsl(var(--foreground));
+  padding-right: 4px;
+  animation: blink-cursor 1s step-end infinite;
+}
+
+/* Rubber Stamp Slam Animation (CSS Fallback) */
+@keyframes stamp-slam {
+  0% { transform: scale(3) rotate(-25deg); opacity: 0; }
+  40% { transform: scale(0.9) rotate(-15deg); opacity: 0.8; }
+  60% { transform: scale(1.05) rotate(-15deg); opacity: 0.5; }
+  80% { transform: scale(0.98) rotate(-15deg); opacity: 0.6; }
+  100% { transform: scale(1) rotate(-15deg); opacity: 0.15; }
+}
+
+@keyframes screen-shake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-8px, 8px); }
+  50% { transform: translate(8px, -5px); }
+  75% { transform: translate(-5px, -8px); }
+}
+
+.stamp-slam-animation {
+  animation: stamp-slam 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.shake-container {
+  animation: screen-shake 0.3s ease-out;
 }

@@ -46,17 +46,53 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
           try {
             const resp = await fetch(media.url)
             const blob = await resp.blob()
-            const reader = new FileReader()
-            const base64Promise = new Promise<string>((resolve) => {
-              reader.onloadend = () => {
-                const dataUrl = reader.result as string
-                const base64 = dataUrl.split(',')[1]
-                resolve(base64)
-              }
-              reader.readAsDataURL(blob)
-            })
-            body.mediaBase64 = await base64Promise
-            body.mimeType = media.mimeType || blob.type || 'image/jpeg'
+            
+            if (media.type === 'image') {
+              const base64Promise = new Promise<string>((resolve, reject) => {
+                const img = new window.Image()
+                img.onload = () => {
+                  const canvas = document.createElement('canvas')
+                  const MAX_DIM = 1200
+                  let { width, height } = img
+                  if (width > MAX_DIM || height > MAX_DIM) {
+                    if (width > height) {
+                      height = Math.round((height * MAX_DIM) / width)
+                      width = MAX_DIM
+                    } else {
+                      width = Math.round((width * MAX_DIM) / height)
+                      height = MAX_DIM
+                    }
+                  }
+                  canvas.width = width
+                  canvas.height = height
+                  const ctx = canvas.getContext('2d')
+                  if (ctx) {
+                    ctx.drawImage(img, 0, 0, width, height)
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8)
+                    resolve(dataUrl.split(',')[1])
+                  } else {
+                    reject(new Error('Canvas context not available'))
+                  }
+                  URL.revokeObjectURL(img.src)
+                }
+                img.onerror = reject
+                img.src = URL.createObjectURL(blob)
+              })
+              body.mediaBase64 = await base64Promise
+              body.mimeType = 'image/jpeg'
+            } else {
+              const reader = new FileReader()
+              const base64Promise = new Promise<string>((resolve) => {
+                reader.onloadend = () => {
+                  const dataUrl = reader.result as string
+                  const base64 = dataUrl.split(',')[1]
+                  resolve(base64)
+                }
+                reader.readAsDataURL(blob)
+              })
+              body.mediaBase64 = await base64Promise
+              body.mimeType = media.mimeType || blob.type || 'audio/mpeg'
+            }
           } catch {
             body.mediaUrl = media.url
           }
@@ -71,8 +107,14 @@ export function MediaAnalysisView({ media, onComplete, onCancel }: MediaAnalysis
         })
 
         if (!response.ok) {
-          const errData = await response.json()
-          throw new Error(errData.error || errData.detail || 'Analysis failed')
+          let errData: any
+          try {
+            errData = await response.json()
+          } catch (e) {
+            const text = await response.text()
+            throw new Error(`Payload may be too large or server error: ${text.slice(0, 100)}`)
+          }
+          throw new Error(errData?.error || errData?.detail || 'Analysis failed')
         }
 
         const result: MediaAnalysisResult = await response.json()

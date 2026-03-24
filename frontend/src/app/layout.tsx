@@ -9,6 +9,8 @@ export const metadata: Metadata = {
   description: 'AI-powered truth analysis and fact-checking from reputable sources',
 }
 
+import { Masthead } from '@/components/Masthead'
+
 export default function RootLayout({
   children,
 }: {
@@ -17,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={playfair.className}>
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background pt-4 pb-12">
+          <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+            <Masthead />
+          </div>
           {children}
         </div>
       </body>
