@@ -60,8 +60,25 @@ export function AITextDetection({ result }: AITextDetectionProps) {
     return 'AI'
   }
 
+  const getStampText = () => {
+    if (result.verdict === 'AI Generated') return 'AI DETECTED'
+    if (result.verdict === 'Likely AI') return 'SUSPECT'
+    if (result.verdict === 'Human Written') return 'HUMAN'
+    if (result.verdict === 'Likely Human') return 'AUTHENTIC'
+    return 'REVIEWED'
+  }
+
   return (
-    <Card className={`border-2 ${verdictCfg.border} ${verdictCfg.bg} overflow-hidden`}>
+    <Card className={`border-2 ${verdictCfg.border} ${verdictCfg.bg} overflow-hidden relative shake-container`}>
+      {/* Rubber Stamp Slam Animation */}
+      <div
+        className={`absolute pointer-events-none z-0 flex items-center justify-center -right-4 top-4 ${verdictCfg.color} stamp-slam-animation`}
+        style={{ mixBlendMode: 'multiply' }}
+      >
+        <div className="border-8 border-current p-3 text-6xl md:text-8xl font-black uppercase tracking-widest whitespace-nowrap opacity-60" style={{ fontFamily: 'var(--font-playfair-display), serif' }}>
+          {getStampText()}
+        </div>
+      </div>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-foreground text-base font-black uppercase">
           <Fingerprint className="h-4 w-4 text-foreground" />

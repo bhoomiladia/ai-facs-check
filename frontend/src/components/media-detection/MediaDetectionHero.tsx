@@ -4,34 +4,34 @@ import { Scan, AudioWaveform, Fingerprint, FileSearch, Sparkles, Zap, Activity }
 
 const features = [
   {
-    icon: <Scan className="h-5 w-5" />,
-    title: 'Image Forensics',
-    desc: 'Pixel-level analysis detecting GAN artifacts, inconsistent noise patterns, and manipulation traces',
-    stat: 'Pixel-level',
-  },
-  {
-    icon: <AudioWaveform className="h-5 w-5" />,
-    title: 'Audio Analysis',
-    desc: 'Spectral analysis to detect voice cloning, splicing artifacts, and synthetic speech patterns',
-    stat: 'Spectral',
-  },
-  {
     icon: <Fingerprint className="h-5 w-5" />,
-    title: 'Deepfake Detection',
-    desc: 'Advanced neural network fingerprint detection for identifying AI-generated or manipulated content',
+    title: 'GAN Fingerprint',
+    desc: 'Detects periodic patterns, over-smoothed textures, and asymmetric noise from GAN upsampling layers',
     stat: 'Neural',
   },
   {
     icon: <FileSearch className="h-5 w-5" />,
-    title: 'Metadata Analysis',
-    desc: 'Deep EXIF and container metadata inspection to identify inconsistencies and synthetic origins',
+    title: 'Metadata Consistency',
+    desc: 'Evaluates lighting, shadows, lens distortion, and optical signatures absent in AI-generated images',
     stat: 'EXIF+',
   },
   {
+    icon: <Scan className="h-5 w-5" />,
+    title: 'Compression Analysis',
+    desc: 'Examines JPEG/PNG compression patterns, double-compression artifacts, and block boundary inconsistencies',
+    stat: 'Blocks',
+  },
+  {
+    icon: <AudioWaveform className="h-5 w-5" />,
+    title: 'Noise Pattern',
+    desc: 'Evaluates sensor noise uniformity and detects denoising artifacts from generation pipelines',
+    stat: 'Sensor',
+  },
+  {
     icon: <Activity className="h-5 w-5" />,
-    title: 'Temporal Analysis',
-    desc: 'Frame-by-frame consistency checks detecting temporal artifacts and unnatural motion patterns',
-    stat: 'Temporal',
+    title: 'Frequency Domain',
+    desc: 'Assesses high-frequency detail consistency and spectral peaks characteristic of diffusion/GAN models',
+    stat: 'Spectral',
   },
 ]
 

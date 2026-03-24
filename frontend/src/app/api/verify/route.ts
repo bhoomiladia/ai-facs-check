@@ -39,13 +39,21 @@ export async function POST(request: NextRequest) {
           .replace(/\s+/g, ' ')
           .trim()
           .slice(0, 3000)
-      } catch (error) {
+      } catch (error: any) {
         console.error('URL fetch error:', error)
+        const statusCode = error?.response?.status
+        let userMessage = 'Failed to fetch URL content'
+        if (statusCode === 403) {
+          userMessage = 'This website has blocked automated access (403 Forbidden). Please copy-paste the article text directly instead of using the URL.'
+        } else if (statusCode === 404) {
+          userMessage = 'Page not found (404). Please check the URL and try again.'
+        } else if (error?.code === 'ECONNREFUSED' || error?.code === 'ENOTFOUND') {
+          userMessage = 'Could not connect to the website. Please check the URL is correct.'
+        } else if (error instanceof Error) {
+          userMessage = error.message
+        }
         return NextResponse.json(
-          { 
-            error: error instanceof Error ? error.message : 'Failed to fetch URL content',
-            detail: 'This usually happens due to target server SSL configuration or IP blocking.'
-          },
+          { error: userMessage },
           { status: 400 }
         )
       }

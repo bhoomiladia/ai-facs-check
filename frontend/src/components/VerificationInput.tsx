@@ -13,11 +13,21 @@ interface VerificationInputProps {
   onStartVerification: (text: string, url?: string, imageUrl?: string) => void
 }
 
-const examples = [
+const textExamples = [
   "The Great Wall of China is visible from space with the naked eye.",
   "Humans only use 10% of their brains.",
   "Lightning never strikes the same place twice.",
   "Goldfish have a 3-second memory.",
+  "The Eiffel Tower can be 15 cm taller during the summer due to thermal expansion.",
+]
+
+const urlExamples = [
+  { label: "Link 1", url: "https://www.aljazeera.com/news/liveblog/2026/3/24/iran-war-live-tehran-says-trumps-claims-of-peace-talks-fake" },
+  { label: "Link 2", url: "https://www.thehindu.com/news/international/iran-israel-us-war-west-asia-conflict-hezbollah-oil-supply-march-22-2026/article70771375.ece" },
+]
+
+const imageExamples = [
+  { label: "AI Landscape", url: "https://cdn.pixabay.com/photo/2024/07/27/10/55/ai-generated-8925260_1280.jpg" },
 ]
 
 export function VerificationInput({ onStartVerification }: VerificationInputProps) {
@@ -28,7 +38,7 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
   const [exIdx, setExIdx] = useState(0)
 
   useEffect(() => {
-    const t = setInterval(() => setExIdx(i => (i + 1) % examples.length), 4000)
+    const t = setInterval(() => setExIdx(i => (i + 1) % textExamples.length), 4000)
     return () => clearInterval(t)
   }, [])
 
@@ -39,8 +49,8 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
   }
 
   const isValid = (activeTab === 'text' && text.trim()) ||
-                  (activeTab === 'url' && url.trim()) ||
-                  (activeTab === 'image' && imageUrl.trim())
+    (activeTab === 'url' && url.trim()) ||
+    (activeTab === 'image' && imageUrl.trim())
 
   return (
     <div className="max-w-4xl mx-auto animate-slide-up">
@@ -52,7 +62,7 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
             <h2 className="text-3xl font-black text-foreground tracking-tight uppercase border-b-2 border-foreground pb-2">Verify Any Claim</h2>
             <p className="text-sm text-foreground/60 mt-2 italic">Paste text, a URL, or an image link to start analysis</p>
           </div>
-          
+
           <div className="panel p-4">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-3 bg-muted border border-foreground mb-3 h-9 rounded-none">
@@ -70,19 +80,24 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
               <TabsContent value="text" className="mt-0">
                 <Textarea
                   id="text-input"
-                  placeholder={`e.g. "${examples[exIdx]}"`}
+                  placeholder={`e.g. "${textExamples[exIdx]}"`}
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   className="min-h-[120px] bg-background border-foreground text-foreground text-sm placeholder:text-foreground/40 resize-none rounded-none"
                 />
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-[11px] text-foreground/50 font-bold">{text.length} chars</span>
-                  <button
-                    onClick={() => { setText(examples[exIdx]); setActiveTab('text') }}
-                    className="text-[11px] text-primary hover:underline font-bold"
-                  >
-                    Use this example
-                  </button>
+                <div className="mt-3">
+                  <span className="text-[10px] text-foreground/50 font-bold uppercase tracking-widest block mb-2">Try an example:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {textExamples.slice(0, 3).map((ex, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { setText(ex); setActiveTab('text') }}
+                        className="text-[10px] bg-muted hover:bg-foreground hover:text-background border border-foreground/20 px-2 py-1 transition-colors font-medium"
+                      >
+                        {ex.slice(0, 30)}...
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </TabsContent>
 
@@ -98,6 +113,17 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
                     onKeyDown={(e) => { if (e.key === 'Enter' && isValid) handleSubmit() }}
                     className="bg-background border-foreground text-foreground text-sm placeholder:text-foreground/40 rounded-none"
                   />
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {urlExamples.map((ex, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { setUrl(ex.url); setActiveTab('url') }}
+                        className="text-[10px] text-primary hover:underline font-bold"
+                      >
+                        ⚡ {ex.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </TabsContent>
 
@@ -113,6 +139,17 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
                     onKeyDown={(e) => { if (e.key === 'Enter' && isValid) handleSubmit() }}
                     className="bg-background border-foreground text-foreground text-sm placeholder:text-foreground/40 rounded-none"
                   />
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {imageExamples.map((ex, i) => (
+                      <button
+                        key={i}
+                        onClick={() => { setImageUrl(ex.url); setActiveTab('image') }}
+                        className="text-[10px] text-primary hover:underline font-bold"
+                      >
+                        ⚡ {ex.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </TabsContent>
             </Tabs>

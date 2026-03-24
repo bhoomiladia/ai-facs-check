@@ -118,22 +118,20 @@ export function MediaUploader({ onMediaSelected }: MediaUploaderProps) {
           <div className="flex items-center gap-2 justify-center">
             <button
               onClick={() => setMode('upload')}
-              className={`px-4 py-2 text-xs font-bold uppercase transition-all border ${
-                mode === 'upload'
+              className={`px-4 py-2 text-xs font-bold uppercase transition-all border ${mode === 'upload'
                   ? 'bg-foreground text-background border-foreground'
                   : 'text-foreground/60 hover:text-foreground border-foreground/30 hover:border-foreground'
-              }`}
+                }`}
             >
               <Upload className="h-3.5 w-3.5 inline mr-1.5" />
               Upload File
             </button>
             <button
               onClick={() => setMode('url')}
-              className={`px-4 py-2 text-xs font-bold uppercase transition-all border ${
-                mode === 'url'
+              className={`px-4 py-2 text-xs font-bold uppercase transition-all border ${mode === 'url'
                   ? 'bg-foreground text-background border-foreground'
                   : 'text-foreground/60 hover:text-foreground border-foreground/30 hover:border-foreground'
-              }`}
+                }`}
             >
               <Link2 className="h-3.5 w-3.5 inline mr-1.5" />
               Paste URL
@@ -202,6 +200,23 @@ export function MediaUploader({ onMediaSelected }: MediaUploaderProps) {
             </div>
           )}
 
+          {/* Use Example button */}
+          <div className="text-center mt-2">
+            <button
+              onClick={() => {
+                const exampleMedia: MediaFile = {
+                  name: 'example-ai-generated.jpg',
+                  type: 'image',
+                  url: 'https://cdn.pixabay.com/photo/2024/07/27/10/55/ai-generated-8925260_1280.jpg',
+                  mimeType: 'image/png',
+                }
+                setPreview(exampleMedia)
+              }}
+              className="text-xs text-primary hover:underline font-bold uppercase tracking-wider"
+            >
+              ⚡ Use Example Image
+            </button>
+          </div>
 
         </div>
       )}

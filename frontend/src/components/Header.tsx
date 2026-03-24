@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Shield, Scan, Fingerprint } from 'lucide-react'
+import { Scan, Fingerprint } from 'lucide-react'
 
 export function Header() {
   const pathname = usePathname()
@@ -11,16 +11,10 @@ export function Header() {
     <header className="border-b-2 border-foreground bg-background sticky top-0 z-50 mb-6">
       <div className="container mx-auto px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 border-2 border-foreground flex items-center justify-center bg-foreground">
-              <Shield className="h-4 w-4 text-background" />
-            </div>
-            <span className="text-base font-black text-foreground tracking-tight uppercase">FactCheck AI</span>
-          </Link>
-          <div className="hidden sm:flex items-center gap-1 ml-2">
+          <div className="hidden sm:flex items-center gap-1">
             <Link
-              href="/"
-              className={`nav-link ${pathname === '/' ? 'active' : ''}`}
+              href="/fact-check"
+              className={`nav-link ${pathname === '/fact-check' ? 'active' : ''}`}
             >
               Fact Check
             </Link>

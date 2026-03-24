@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 }
 
 import { Masthead } from '@/components/Masthead'
+import { Header } from '@/components/Header'
 
 export default function RootLayout({
   children,
@@ -23,6 +24,7 @@ export default function RootLayout({
           <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
             <Masthead />
           </div>
+          <Header />
           {children}
         </div>
       </body>

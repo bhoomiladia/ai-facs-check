@@ -53,11 +53,28 @@ export function MediaResultsDashboard({ result, onStartNew }: MediaResultsDashbo
   const verdict = VERDICT_CONFIG[result.verdict]
   const gaugeOffset = 283 - (283 * result.overallScore) / 100
 
+  const getStampText = () => {
+    if (result.verdict === 'ai_generated') return 'SYNTHETIC'
+    if (result.verdict === 'likely_ai') return 'SUSPECT'
+    if (result.verdict === 'authentic') return 'AUTHENTIC'
+    if (result.verdict === 'likely_authentic') return 'VERIFIED'
+    return 'REVIEWED'
+  }
+
   return (
-    <div className="max-w-5xl mx-auto animate-slide-up space-y-5">
+    <div className="max-w-5xl mx-auto animate-slide-up space-y-5 shake-container">
       {/* Top: Verdict + Gauge */}
-      <div className="panel p-6">
-        <div className="grid md:grid-cols-[280px_1fr] gap-6 items-center">
+      <div className="panel p-6 relative overflow-hidden">
+        {/* Rubber Stamp Slam Animation */}
+        <div
+          className={`absolute pointer-events-none z-0 flex items-center justify-center -right-4 top-4 ${verdict.color} stamp-slam-animation`}
+          style={{ mixBlendMode: 'multiply' }}
+        >
+          <div className="border-8 border-current p-3 text-6xl md:text-8xl font-black uppercase tracking-widest whitespace-nowrap opacity-60" style={{ fontFamily: 'var(--font-playfair-display), serif' }}>
+            {getStampText()}
+          </div>
+        </div>
+        <div className="grid md:grid-cols-[280px_1fr] gap-6 items-center relative z-10">
           {/* Gauge */}
           <div className="flex flex-col items-center">
             <div className="relative w-44 h-44">

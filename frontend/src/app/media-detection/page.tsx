@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Header } from '@/components/Header'
 import { MediaDetectionHero } from '@/components/media-detection/MediaDetectionHero'
 import { MediaUploader } from '@/components/media-detection/MediaUploader'
 import { MediaAnalysisView } from '@/components/media-detection/MediaAnalysisView'
@@ -35,7 +34,6 @@ export default function MediaDetectionPage() {
     <div className="min-h-screen relative overflow-hidden">
       {/* Content */}
       <div className="relative z-10">
-        <Header />
         <main className="container mx-auto px-4 py-6 max-w-6xl">
           {view === 'upload' && (
             <>
