@@ -3,6 +3,7 @@ import { AdvancedFactCheckerAgent } from '@/lib/fact-checker-agent'
 import axios from 'axios'
 import https from 'https'
 import crypto from 'crypto'
+import * as cheerio from 'cheerio'
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,12 +34,17 @@ export async function POST(request: NextRequest) {
         })
 
         const html = response.data
-        // Basic text extraction
-        content = html
-          .replace(/<[^>]+>/g, ' ')
+        const $ = cheerio.load(html)
+        
+        // Remove scripts, styles, and junk
+        $('script, style, noscript, iframe, nav, footer, header, aside').remove()
+        
+        // Extract meaningful text
+        content = $('p, h1, h2, h3, h4, h5, h6, li, article, main')
+          .text()
           .replace(/\s+/g, ' ')
           .trim()
-          .slice(0, 3000)
+          .slice(0, 5000) // Increased token window now that we have clean text
       } catch (error: any) {
         console.error('URL fetch error:', error)
         const statusCode = error?.response?.status

@@ -24,6 +24,10 @@ const textExamples = [
 const urlExamples = [
   { label: "Link 1", url: "https://www.aljazeera.com/news/liveblog/2026/3/24/iran-war-live-tehran-says-trumps-claims-of-peace-talks-fake" },
   { label: "Link 2", url: "https://www.thehindu.com/news/international/iran-israel-us-war-west-asia-conflict-hezbollah-oil-supply-march-22-2026/article70771375.ece" },
+  { label: "Link 3", url: "https://indianexpress.com/article/cities/delhi/delhi-budget-2026-27-live-updates-assembly-bomb-threat-10597884/" },
+  { label: "Link 4", url: "https://www.bbc.com/news/world-middle-east-68630569" },
+  { label: "Link 5", url: "https://www.snopes.com/fact-check/man-sues-wife-ugly-children/" },
+  { label: "Link 6", url: "https://timesofindia.indiatimes.com/business/international-business/pakistan-china-sri-lanka-see-fuel-prices-rise-as-hormuz-choke-fuels-oil-crisis-how-countries-are-feeling-the-impact/articleshow/129767474.cms" },
 ]
 
 const imageExamples = [
@@ -166,7 +170,7 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
         </div>
 
         {/* Right: Feature cards */}
-        <div className="space-y-3 stagger">
+        <div className="space-y-3 stagger max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
           <FeatureCard
             icon={<Search className="h-4 w-4 text-foreground" />}
             title="Multi-Source Search"
@@ -174,9 +178,15 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
             stat="4+ sources"
           />
           <FeatureCard
+            icon={<Search className="h-4 w-4 text-foreground" />}
+            title="Neural Deep Research"
+            desc="Cross-references scientific journals, historical archives, and academic papers via Exa"
+            stat="Deep Scan"
+          />
+          <FeatureCard
             icon={<Cpu className="h-4 w-4 text-foreground" />}
             title="AI Claim Analysis"
-            desc="Hardened verification with anti-hallucination, semantic disambiguation, and adversarial defense"
+            desc="Hardened verification with anti-hallucination, semantics, and adversarial defense"
             stat="7 checks"
           />
           <FeatureCard
@@ -184,6 +194,12 @@ export function VerificationInput({ onStartVerification }: VerificationInputProp
             title="Confidence Scoring"
             desc="Calibrated confidence with source hierarchy, cross-contamination prevention"
             stat="0-100%"
+          />
+          <FeatureCard
+            icon={<FileText className="h-4 w-4 text-foreground" />}
+            title="Forensic Linguistic Scan"
+            desc="Analyzes perplexity and burstiness to detect LLM-generated text"
+            stat="AI Model"
           />
         </div>
       </div>
