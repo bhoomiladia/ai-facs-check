@@ -358,3 +358,29 @@
   color: hsl(var(--foreground));
   border-bottom: 2px solid hsl(var(--foreground));
 }
+
+/* ═══════════════════════════════════════════════
+   AI TEXT DETECTION
+   ═══════════════════════════════════════════════ */
+
+/* Signal fill overrides */
+.ai-signal-fill {
+  background: #b91c1c !important; /* red-700 */
+}
+.human-signal-fill {
+  background: #047857 !important; /* emerald-700 */
+}
+
+/* Loading spinner */
+@keyframes ai-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.ai-detection-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(0,0,0,0.1);
+  border-top-color: hsl(var(--foreground));
+  border-radius: 50%;
+  animation: ai-spin 0.8s linear infinite;
+}

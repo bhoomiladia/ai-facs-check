@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { Shield, Scan } from 'lucide-react'
+import { Shield, Scan, Fingerprint } from 'lucide-react'
 
 export function Header() {
   const pathname = usePathname()
@@ -30,6 +30,13 @@ export function Header() {
             >
               <Scan className="h-3 w-3" />
               Media Detection
+            </Link>
+            <Link
+              href="/detect-ai"
+              className={`nav-link flex items-center gap-1.5 ${pathname === '/detect-ai' ? 'active' : ''}`}
+            >
+              <Fingerprint className="h-3 w-3" />
+              AI Text Detection
             </Link>
           </div>
         </div>

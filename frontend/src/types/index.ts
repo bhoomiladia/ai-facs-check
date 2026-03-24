@@ -70,6 +70,29 @@ export interface VerificationResult {
   }
 }
 
+export interface AITextSignal {
+  name: string
+  description: string
+  strength: number
+  direction: 'ai' | 'human'
+}
+
+export interface SentenceAnalysis {
+  text: string
+  score: number
+  flags: string[]
+}
+
+export interface AITextDetectionResult {
+  overallScore: number
+  verdict: 'Human Written' | 'Likely Human' | 'Mixed/Uncertain' | 'Likely AI' | 'AI Generated'
+  confidence: number
+  signals: AITextSignal[]
+  analysis: string
+  sentenceAnalysis: SentenceAnalysis[]
+  processingTime: number
+}
+
 export interface ErrorResponse {
   error: string
   detail?: string

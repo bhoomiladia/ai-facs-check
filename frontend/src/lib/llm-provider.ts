@@ -23,15 +23,15 @@ export class LLMProvider {
     })
   }
 
-  async invoke(messages: BaseMessage[]): Promise<BaseMessage> {
+  async invoke(messages: BaseMessage[]): Promise<any> {
     try {
       console.log('Attempting to invoke Groq (Primary)...')
-      const response = await this.primaryLLM.invoke(messages)
+      const response = await this.primaryLLM.invoke(messages as any)
       return response
     } catch (error) {
       console.warn('Groq failed, falling back to Gemini:', error)
       try {
-        const response = await this.fallbackLLM.invoke(messages)
+        const response = await this.fallbackLLM.invoke(messages as any)
         return response
       } catch (fallbackError) {
         console.error('All LLM providers failed:', fallbackError)
@@ -40,11 +40,11 @@ export class LLMProvider {
     }
   }
 
-  getPrimary(): BaseChatModel {
+  getPrimary(): ChatGroq {
     return this.primaryLLM
   }
 
-  getFallback(): BaseChatModel {
+  getFallback(): ChatGoogleGenerativeAI {
     return this.fallbackLLM
   }
 }

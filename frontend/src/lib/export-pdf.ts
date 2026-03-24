@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf'
-import type { VerificationResult } from '@/types'
+import type { VerificationResult, AITextDetectionResult } from '@/types'
 
 // ─── Color palette for statuses ───
 const STATUS_COLORS: Record<string, [number, number, number]> = {
@@ -282,4 +282,126 @@ export function exportVerificationAsPDF(result: VerificationResult): void {
   // ─── Save ───
   const timestamp = new Date().toISOString().split('T')[0]
   doc.save(`daily-verifier-report-${timestamp}.pdf`)
+}
+
+export function exportAITextAsPDF(result: AITextDetectionResult): void {
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+  const pageW = doc.internal.pageSize.getWidth()
+  const margin = 15
+  const contentW = pageW - margin * 2
+  let y = margin
+
+  // ─── Header ───
+  doc.setFont('times', 'bold')
+  doc.setFontSize(28)
+  doc.setTextColor(0, 0, 0)
+  const title = 'THE DAILY VERIFIER'
+  doc.text(title, pageW / 2, 22, { align: 'center' })
+  
+  doc.setFontSize(12)
+  doc.setFont('times', 'italic')
+  doc.text('AI Authorship Analysis Report', pageW / 2, 28, { align: 'center' })
+
+  // Double line border below header
+  doc.setDrawColor(0, 0, 0)
+  doc.setLineWidth(0.5)
+  doc.line(margin, 32, pageW - margin, 32)
+  doc.setLineWidth(1.5)
+  doc.line(margin, 34, pageW - margin, 34)
+
+  doc.setFont('times', 'normal')
+  doc.setFontSize(9)
+  doc.setTextColor(0, 0, 0)
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+  doc.text(`Vol. I — No. 1`, margin, 40)
+  doc.text(today, pageW / 2, 40, { align: 'center' })
+
+  doc.setLineWidth(0.5)
+  doc.line(margin, 43, pageW - margin, 43)
+
+  y = 52
+
+  // ─── Verdict Bar ───
+  const score = Math.round(result.overallScore * 100)
+  let verdictColor: [number, number, number] = [0, 0, 0]
+  if (result.verdict.includes('Human')) verdictColor = [4, 120, 87]
+  else if (result.verdict.includes('AI')) verdictColor = [185, 28, 28]
+  else verdictColor = [202, 138, 4]
+
+  doc.setDrawColor(0, 0, 0)
+  doc.setLineWidth(1)
+  doc.rect(margin, y, contentW, 22)
+
+  doc.setFont('times', 'bold')
+  doc.setFontSize(14)
+  doc.setTextColor(...verdictColor)
+  doc.text(`${result.verdict.toUpperCase()}  —  ${score}% AI PROBABILITY`, margin + 5, y + 9)
+
+  doc.setFont('times', 'italic')
+  doc.setFontSize(10)
+  doc.setTextColor(0, 0, 0)
+  doc.text(`Confidence: ${Math.round(result.confidence * 100)}% | Analysis Time: ${result.processingTime.toFixed(1)}s`, margin + 5, y + 17)
+
+  y += 32
+
+  // ─── Summary Analysis ───
+  doc.setFont('times', 'bold')
+  doc.setFontSize(12)
+  doc.setTextColor(0, 0, 0)
+  doc.text('I. LINGUISTIC ANALYSIS SUMMARY', margin, y)
+  y += 6
+
+  doc.setFont('times', 'normal')
+  doc.setFontSize(10)
+  const analysisLines = wrapText(doc, result.analysis, contentW)
+  for (const line of analysisLines) {
+    y = addPageIfNeeded(doc, y, margin)
+    doc.text(line, margin, y)
+    y += 5
+  }
+  y += 6
+
+  // ─── Signals ───
+  doc.setFont('times', 'bold')
+  doc.setFontSize(12)
+  doc.text('II. DETECTED SIGNALS', margin, y)
+  y += 6
+
+  for (const sig of result.signals) {
+    y = addPageIfNeeded(doc, y, margin)
+    
+    doc.setFont('times', 'bold')
+    doc.setFontSize(10)
+    doc.setTextColor(sig.direction === 'ai' ? 185 : 4, sig.direction === 'ai' ? 28 : 120, sig.direction === 'ai' ? 28 : 87)
+    doc.text(`[${sig.direction.toUpperCase()}] ${sig.name} (${Math.round(sig.strength * 100)}%)`, margin, y)
+    y += 5
+
+    doc.setFont('times', 'normal')
+    doc.setTextColor(50, 50, 50)
+    const sigLines = wrapText(doc, sig.description, contentW - 5)
+    for (const line of sigLines) {
+      y = addPageIfNeeded(doc, y, margin)
+      doc.text(line, margin + 5, y)
+      y += 4.5
+    }
+    y += 3
+  }
+
+  y += 6
+
+  // ─── Footer ───
+  const totalPages = doc.getNumberOfPages()
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i)
+    const pageH = doc.internal.pageSize.getHeight()
+    doc.setFont('times', 'normal')
+    doc.setFontSize(8)
+    doc.setTextColor(100, 100, 100)
+    doc.text('THE DAILY VERIFIER — Truth through Technology', margin, pageH - 8)
+    doc.text(`Page ${i} of ${totalPages}`, pageW - margin, pageH - 8, { align: 'right' })
+  }
+
+  // ─── Save ───
+  const timestamp = new Date().toISOString().split('T')[0]
+  doc.save(`ai-authorship-report-${timestamp}.pdf`)
 }
