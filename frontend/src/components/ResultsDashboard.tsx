@@ -47,6 +47,13 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
   const VerdictIcon = verdict.icon
   const accuracyPct = Math.round(result.overall_accuracy * 100)
 
+  const getStampText = () => {
+    if (verdict.label === 'Mostly True') return 'VERIFIED'
+    if (verdict.label === 'Mostly False') return 'DEBUNKED'
+    if (verdict.label === 'No Claims') return 'NO CLAIMS'
+    return 'REVIEWED'
+  }
+
   const getStatusConfig = (status: string) => {
     switch (status) {
       case 'True': return { icon: CheckCircle, color: 'text-emerald-800', bg: 'bg-emerald-50', border: 'border-emerald-800', barColor: 'bg-emerald-700' }
@@ -65,10 +72,20 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-5 animate-slide-up">
+    <div className="max-w-5xl mx-auto space-y-5 animate-slide-up shake-container">
       {/* ─── Verdict Banner ─── */}
       <div className={`relative overflow-hidden border-2 ${verdict.border} ${verdict.bg} p-5 panel`}>
-        <div className="flex items-center justify-between flex-wrap gap-4">
+        {/* Rubber Stamp Slam Animation (CSS Fast Fallback) */}
+        <div 
+          className={`absolute pointer-events-none z-0 flex items-center justify-center -right-4 top-4 ${verdict.color} stamp-slam-animation`}
+          style={{ mixBlendMode: 'multiply' }}
+        >
+          <div className="border-8 border-current p-3 text-6xl md:text-8xl font-black uppercase tracking-widest whitespace-nowrap opacity-60" style={{ fontFamily: 'var(--font-playfair-display), serif' }}>
+            {getStampText()}
+          </div>
+        </div>
+
+        <div className="relative z-10 flex items-center justify-between flex-wrap gap-4">
           <div className="flex items-center gap-5">
             {/* Gauge */}
             <div className="relative w-20 h-20 flex-shrink-0">
@@ -195,9 +212,16 @@ export function ResultsDashboard({ result, onStartNew }: ResultsDashboardProps) 
               >
                 <StatusIcon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${config.color}`} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-foreground text-sm leading-relaxed font-medium">{vc.claim.text}</p>
+                  <p className={`text-foreground text-sm leading-relaxed font-medium ${['False', 'Partially True'].includes(vc.status) ? 'redline-strike' : ''}`}>
+                    {vc.claim.text}
+                  </p>
+                  {['False', 'Partially True'].includes(vc.status) && vc.correct_answer && (
+                    <p className="mt-4 py-2 px-3 border-l-4 border-foreground bg-foreground/5 text-[15px] font-serif leading-relaxed text-foreground typewriter-cursor">
+                      <strong>CORRECTION:</strong> {vc.correct_answer}
+                    </p>
+                  )}
                   {/* Confidence bar */}
-                  <div className="flex items-center gap-3 mt-2">
+                  <div className="flex items-center gap-3 mt-3">
                     <Badge variant="secondary" className={`${config.bg} ${config.color} border ${config.border} text-xs rounded-none font-bold`}>
                       {vc.status}
                     </Badge>

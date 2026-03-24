@@ -42,7 +42,7 @@ export function ProcessingView({ updates, onCancel }: ProcessingViewProps) {
       {/* Header */}
       <div className="text-center space-y-2">
         <h2 className="text-3xl font-black text-foreground uppercase tracking-tight">
-          {isCompleted ? 'Verification Complete' : 'Analyzing...'}
+          {isCompleted ? 'Verification Complete' : <span className="ink-bleed inline-block">Analyzing...</span>}
         </h2>
         <p className="text-foreground/60 text-sm italic">
           {isCompleted
