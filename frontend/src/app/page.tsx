@@ -122,9 +122,17 @@ export default function Home() {
               <div className="md:col-span-4 border-l-2 border-foreground pl-8">
                 <h4 className="text-xl font-black uppercase border-b-2 border-foreground pb-2 mb-4">Latest Briefings</h4>
                 
-                <div className="mb-6 pb-6 border-b border-gray-300">
+                <div className="mb-6 pb-6 border-b border-gray-300 group cursor-pointer">
                   <span className="badge badge-partial mb-2 inline-block">Analysis</span>
-                  <h5 className="font-bold text-lg mb-2 leading-snug">The Architecture of Truth</h5>
+                  <div className="w-full h-32 mb-3 overflow-hidden border border-foreground/30 relative">
+                    <img 
+                      src="https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?auto=format&fit=crop&w=800&q=80" 
+                      alt="Laptop screen with data" 
+                      className="w-full h-full object-cover grayscale contrast-125 sepia-[0.3] group-hover:grayscale-0 group-hover:sepia group-hover:hue-rotate-[180deg] group-hover:saturate-200 transition-all duration-700"
+                    />
+                    <div className="absolute inset-0 bg-foreground opacity-5 group-hover:opacity-0 transition-opacity" style={{ mixBlendMode: 'multiply' }}></div>
+                  </div>
+                  <h5 className="font-bold text-lg mb-2 leading-snug group-hover:text-primary transition-colors">The Architecture of Truth</h5>
                   <p className="text-foreground/80 text-sm">
                     How Groq and Llama-3 power the reasoning engines behind our verification process.
                   </p>
@@ -151,8 +159,8 @@ export default function Home() {
                   <span className="badge badge-false mb-2 inline-block">Debunked</span>
                   <div className="w-full h-32 mb-3 overflow-hidden border border-foreground/30 relative">
                     <img 
-                      src="https://images.unsplash.com/photo-1610444697395-6b5ce5d496e3?auto=format&fit=crop&q=80" 
-                      alt="Digital face" 
+                      src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80" 
+                      alt="Cyber face" 
                       className="w-full h-full object-cover grayscale contrast-150 group-hover:grayscale-0 group-hover:sepia group-hover:hue-rotate-[220deg] group-hover:saturate-[3] transition-all duration-700"
                     />
                     {/* Halftone dot pattern overlay simulating newsprint */ }
